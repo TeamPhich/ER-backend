@@ -1,2 +1,2 @@
-console.log("dev")
+console.log("dev");
 require("./src/index");
