@@ -23,6 +23,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/ER-backend ubuntu@18.162.125.153:~/ER-backend
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/ ubuntu@18.162.125.153:~/ER-backend
   on:
     branch: master
