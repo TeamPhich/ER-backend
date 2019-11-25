@@ -25,7 +25,7 @@ deploy:
   provider: script
   cleanup: true
   script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/ ubuntu@18.162.125.153:~/ER-backend
-          && ssh ubuntu@18.162.125.153 'cd ER-backend && pm2 start ecosystem.config.js'
+          && ssh ubuntu@18.162.125.153 'cd ER-backend && npm i && pm2 start ecosystem.config.js'
   on:
     branch: master
   on:
