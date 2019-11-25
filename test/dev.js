@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 describe('health check dev server', () => {
 
     describe('/GET', () => {
-        it('it should return ddl-backend', (done) => {
+        it('it should return ER-backend', (done) => {
             chai.request(server)
                 .get('/api/v1')
                 .end((err, res) => {

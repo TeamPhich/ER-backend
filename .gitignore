@@ -1,2 +1,4 @@
 .idea
 node_modules
+.travis/.travis_deploy_key
+.travis/.travis_deploy_key.pub
