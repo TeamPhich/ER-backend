@@ -1,3 +1,4 @@
+os: linux
 language: node_js
 node_js:
 - 10.16.2
@@ -22,7 +23,7 @@ before_deploy:
   - ssh-add /tmp/deploy_rsa
 deploy:
   provider: script
-  skip_cleanup: true
+  cleanup: true
   script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/ ubuntu@18.162.125.153:~/ER-backend
           && ssh ubuntu@18.162.125.153 'cd ER-backend && pm2 start ecosystem.config.js'
   on:
