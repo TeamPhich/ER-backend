@@ -6,7 +6,7 @@ const port = config.get("PORT");
 
 const app = express();
 
-app.use("/api/v1", (req, res) => {
+app.use("/ER-backend/api/v1", (req, res) => {
     res.send("ER-backend");
 });
 
