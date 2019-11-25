@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+- 10.16.2
+install: npm install
+cache:
+  directories:
+    - "node_modules"
+script: npm test
+after_success:
+  - eval "$(ssh-agent -s)"
+  - chmod 600 .travis_deploy_key
+  - ssh-add .travis_deploy_key
+  - "tar -czf - -C _site . | ssh deploy@ssh.example.org 'tar -xzf - -C /var/www'"
+branches:
+  only:
+    - master
+    - dev
