@@ -1,2 +1,4 @@
 .idea
 node_modules
+deploy_rsa
+package-lock.json
