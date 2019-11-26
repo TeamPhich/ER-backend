@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const config = require("config");
 const port = config.get("PORT");
+const db = require("./models/index");
 
 const app = express();
 
@@ -29,6 +30,15 @@ app.use(morgan('combined'));
 app.use("/ER-backend/api/v1", (req, res) => {
     res.send("ER-backend");
 });
+
+db.sequelize.sync({force: true})
+    .then(() => {
+        console.log('Connect database is successfully');
+    })
+    .catch(err => {
+        console.log(err.message);
+        process.exit();
+    });
 
 app.listen(port, () => {
     console.log("ER-backend is running on PORT:", port)

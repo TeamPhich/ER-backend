@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit test/dev.js"
+    "test": "mocha --exit test/dev.js",
+    "dev": "NODE_ENV=dev node index.js",
+    "local": "NODE_ENV=myLocal nodemon index.js"
   },
   "repository": {
     "type": "git",

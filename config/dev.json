@@ -1,3 +1,9 @@
 {
-  "PORT": 6000
+  "PORT": 6000,
+  "database": {
+    "host": "18.162.125.153",
+    "name": "ER-backend",
+    "user": "phpmyadmin",
+    "password": "2CGm{7f9d{!\"WYmQ"
+  }
 }
