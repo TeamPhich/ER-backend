@@ -78,6 +78,11 @@ db.students.belongsTo(db.accounts, {
     sourceKey: "id"
 });
 
+db.students.belongsTo(db.shift_room, {
+    foreignKey: "shift_room",
+    sourceKey: "id"
+});
+
 db.shift_room.belongsTo(db.rooms, {
     foreignKey: "room_id",
     sourceKey: "id"
@@ -88,8 +93,8 @@ db.shift_room.belongsTo(db.shifts_exams, {
     sourceKey: "id"
 });
 
-db.shift_room.belongsTo(db.exams, {
-    foreignKey: "exam_id",
+db.shift_room.belongsTo(db.subject_classes, {
+    foreignKey: "subject_classes_id",
     sourceKey: "id"
 });
 
