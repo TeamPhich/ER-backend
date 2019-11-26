@@ -6,5 +6,6 @@
     "name": "ER-backend",
     "user": "root",
     "password": "1234"
-  }
+  },
+  "SECRET_KEY": "9zHzP7as(zC}4sd_"
 }

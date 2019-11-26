@@ -5,6 +5,7 @@ const cors = require("cors");
 const config = require("config");
 const port = config.get("PORT");
 const db = require("./models/index");
+const accounts = require("./routes/accounts.route");
 
 const app = express();
 
@@ -26,12 +27,13 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(morgan('combined'));
 
+app.use("/ER-backend/api/v1/accounts/", accounts);
 
 app.use("/ER-backend/api/v1", (req, res) => {
     res.send("ER-backend");
 });
 
-db.sequelize.sync({force: true})
+db.sequelize.sync()
     .then(() => {
         console.log('Connect database is successfully');
     })
