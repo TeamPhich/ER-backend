@@ -18,13 +18,16 @@ async function login(req, res) {
         let [userData] = await db.accounts.findAll({
             where: {
                 user_name: user_name
-            }
+            },
+            include: [ db.roles]
         });
 
         if (!userData) throw new Error("user_name or password is incorrect");
 
         let user = userData.dataValues;
         const hashPassword = user.password;
+        const isAdmin = user.role.dataValues.name === "admin";
+        console.log(isAdmin);
         const checkPass = bcrypt.compareSync(password, hashPassword);
 
         if (!checkPass) throw new Error("user_name or password is incorrect");
@@ -40,7 +43,7 @@ async function login(req, res) {
             }
         );
 
-        res.json(responseUtil.success({data: {token}}));
+        res.json(responseUtil.success({data: {token, isAdmin}}));
 
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
