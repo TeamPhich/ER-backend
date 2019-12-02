@@ -7,7 +7,7 @@ const multerMiddleware = require("../middlewares/multer.middleware");
 
 router.post("/", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    // multerMiddleware.upload.single("students"),
+    multerMiddleware.upload.single("students"),
     studentsController.importStudents);
 
 module.exports = router;

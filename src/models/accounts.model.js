@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING
         },
         birthday: {
-            type: Sequelize.INTEGER
+            type: Sequelize.INTEGER(15)
         },
         fullname: {
             type: Sequelize.STRING
