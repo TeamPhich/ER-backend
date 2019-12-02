@@ -1,5 +1,4 @@
 const multer = require("multer");
-const gm = require('gm').subClass({imageMagick: true});
 const path = require("path");
 
 const storage = multer.diskStorage({

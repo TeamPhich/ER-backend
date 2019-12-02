@@ -6,6 +6,7 @@ const config = require("config");
 const port = config.get("PORT");
 const db = require("./models/index");
 const accounts = require("./routes/accounts.route");
+const students = require("./routes/students.route");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({
 app.use(morgan('combined'));
 
 app.use("/api/v1/accounts/", accounts);
+app.use("/api/v1/students/", students);
 
 app.use("/api/v1", (req, res) => {
     res.send("ER-backend");
