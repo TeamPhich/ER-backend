@@ -39,7 +39,7 @@ async function login(req, res) {
                 email: user.email
             },
             config.get('SECRET_KEY'), {
-                expiresIn: twentyFourHours
+                expiresIn: 1
             }
         );
 

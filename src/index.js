@@ -27,9 +27,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(morgan('combined'));
 
-app.use("/ER-backend/api/v1/accounts/", accounts);
+app.use("/api/v1/accounts/", accounts);
 
-app.use("/ER-backend/api/v1", (req, res) => {
+app.use("/api/v1", (req, res) => {
     res.send("ER-backend");
 });
 
