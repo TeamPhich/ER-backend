@@ -2,11 +2,13 @@ const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
 const csv = require("csvtojson");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
 
 async function importStudents(req, res) {
     try {
         if (!req.file) throw new Error("File is missing!");
-        const studentsJSON = await csv().fromFile(req.file.path);
+        const filePath = req.file.path
+        const studentsJSON = await csv().fromFile(filePath);
         studentsJSON.map(student => {
             student.birthday = new Date(student.birthday).getTime()/1000;
         });
@@ -32,6 +34,7 @@ async function importStudents(req, res) {
                 role_id: 2
             });
         }
+        fs.unlinkSync(filePath);
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}))
