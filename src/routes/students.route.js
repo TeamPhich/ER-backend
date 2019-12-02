@@ -10,4 +10,16 @@ router.post("/", tokenMiddleware.verify,
     multerMiddleware.upload.single("students"),
     studentsController.importStudents);
 
+router.get("/", tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    studentsController.getInfomation);
+
+// router.put("/", tokenMiddleware.verify,
+//     privilegesMiddleware.verify(1),
+//     studentsController.putInformation)
+
+router.delete("/:student_id", tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    studentsController.deleteStudent);
+
 module.exports = router;
