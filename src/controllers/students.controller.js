@@ -21,7 +21,7 @@ async function importStudents(req, res) {
             });
             if (existedStudent.length) existedStudents.push({MSSV: student.MSSV})
         }
-        if (existedStudents.length) throw new Error(JSON.stringify({message: "student existed", existedStudents}));
+        if (existedStudents.length) throw new Error(JSON.stringify("student đã tồn tại:" + JSON.stringify(existedStudents)));
         for (let student of studentsJSON) {
             let salt = await bcrypt.genSalt(10);
             let {MSSV, fullname, birthday} = student;
