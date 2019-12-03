@@ -1,5 +1,6 @@
 const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
+const Op = db.Sequelize.Op;
 
 async function create(req, res) {
     const {subject_id, name, credit} = req.body;
@@ -10,7 +11,7 @@ async function create(req, res) {
 
         const existedSubject = await db.subjects.findAll({
             where: {
-                [db.Sequelize.Op.or]: [
+                [Op.or]: [
                     {subject_id: subject_id},
                     {name: name}
                 ]
@@ -58,35 +59,45 @@ async function deleteSubject(req, res) {
     }
 }
 
-// async function updateSubject(req, res) {
-//     try {
-//         let {subject_id, new_subject_id, name, credit} = req.body;
-//         if (!subject_id) throw new Error("subject_id fields is missing");
-//         let updateCondition = {};
-//         let existSubjectCondition = [];
-//         if (new_subject_id) {
-//             updateCondition.subject_id = new_subject_id;
-//             existSubjectCondition.push({subject_id: })
-//         }
-//         if (name) {
-//             updateCondition.name = name;
-//         }
-//         if (credit) updateCondition.credit = credit;
-//         await db.subjects.update(
-//             {...updateCondition}, {
-//                 where: {
-//                     subject_id
-//                 }
-//             });
-//         res.json(responseUtil.success({data: {updateCondition}}))
-//     } catch (err) {
-//         res.json(responseUtil.fail({reason: err.message}));
-//     }
-// }
+async function updateSubject(req, res) {
+    try {
+        let {subject_id, new_subject_id, name, credit} = req.body;
+        if (!subject_id) throw new Error("subject_id fields is missing");
+        let updateCondition = {};
+        let existSubjectCondition = [];
+        if (new_subject_id) {
+            if(new_subject_id === subject_id) throw new Error("Subject_id isn't change");
+            updateCondition.subject_id = new_subject_id;
+            existSubjectCondition.push({subject_id: new_subject_id})
+        }
+        if (name) {
+            updateCondition.name = name;
+            existSubjectCondition.push({[Op.and]: [{name}, {subject_id: {[Op.not]: subject_id}}]})
+        }
+        const existSubject = await db.subjects.findAll({
+           where:{
+               [Op.or]: existSubjectCondition
+           }
+        });
+
+        if(existSubject.length) throw new Error("Mẫ môn học hoặc tên bị trùng với các môn khác!");
+
+        if (credit) updateCondition.credit = credit;
+        await db.subjects.update(
+            {...updateCondition}, {
+                where: {
+                    subject_id
+                }
+            });
+        res.json(responseUtil.success({data: {}}))
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
 
 module.exports = {
     create,
     getInformation,
     deleteSubject,
-    // updateSubject
+    updateSubject
 };

@@ -16,8 +16,8 @@ router.delete("/:subject_id", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     subjectsController.deleteSubject);
 
-// router.put("/", tokenMiddleware.verify,
-//     privilegesMiddleware.verify(1),
-//     subjectsController.updateSubject);
+router.put("/", tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    subjectsController.updateSubject);
 
 module.exports = router;

@@ -25,6 +25,7 @@ const sequelize = new Sequelize(
             freezeTableName: true
         },
         logging: false
+
     }
 );
 
