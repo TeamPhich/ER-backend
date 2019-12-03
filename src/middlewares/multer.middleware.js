@@ -13,9 +13,9 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
     const extension = path.extname(file.originalname);
-    if (extension === '.csv')
+    if (extension === '.xlsx')
         cb(null, true);
-    else cb(new Error('file is not image'), false);
+    else cb(new Error('file is not excel'), false);
 };
 
 const upload = multer({

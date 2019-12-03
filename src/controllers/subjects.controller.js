@@ -58,29 +58,35 @@ async function deleteSubject(req, res) {
     }
 }
 
-async function updateSubject(req, res) {
-    try {
-        let {subject_id, new_subject_id, name, credit} = req.body;
-        if (!subject_id) throw new Error("subject_id fields is missing");
-        let updateCondition = {};
-        if (new_subject_id) updateCondition.subject_id = new_subject_id;
-        if (name) updateCondition.name = name;
-        if (credit) updateCondition.credit = credit;
-        await db.subjects.update(
-            {...updateCondition},{
-            where: {
-                subject_id
-            }
-        });
-        res.json(responseUtil.success({data: {updateCondition}}))
-    } catch (err) {
-        res.json(responseUtil.fail({reason: err.message}));
-    }
-}
+// async function updateSubject(req, res) {
+//     try {
+//         let {subject_id, new_subject_id, name, credit} = req.body;
+//         if (!subject_id) throw new Error("subject_id fields is missing");
+//         let updateCondition = {};
+//         let existSubjectCondition = [];
+//         if (new_subject_id) {
+//             updateCondition.subject_id = new_subject_id;
+//             existSubjectCondition.push({subject_id: })
+//         }
+//         if (name) {
+//             updateCondition.name = name;
+//         }
+//         if (credit) updateCondition.credit = credit;
+//         await db.subjects.update(
+//             {...updateCondition}, {
+//                 where: {
+//                     subject_id
+//                 }
+//             });
+//         res.json(responseUtil.success({data: {updateCondition}}))
+//     } catch (err) {
+//         res.json(responseUtil.fail({reason: err.message}));
+//     }
+// }
 
 module.exports = {
     create,
     getInformation,
     deleteSubject,
-    updateSubject
+    // updateSubject
 };
