@@ -31,7 +31,12 @@ async function create(req, res) {
 
 async function getInformation(req, res) {
     try {
-        const subjectsInformation = await db.subjects.findAll();
+        let {page, pageSize} = req.query;
+        if(!page) page = 1;
+        if(!pageSize) pageSize = 15;
+        const offset = (page - 1) * pageSize;
+        const limit = Number(pageSize);
+        const subjectsInformation = await db.subjects.findAll({offset,limit});
         subjectsInformation.map(subject => {
             return subject.dataValues;
         });
@@ -65,8 +70,8 @@ async function updateSubject(req, res) {
         if (!subject_id) throw new Error("subject_id fields is missing");
         let updateCondition = {};
         let existSubjectCondition = [];
-        if (new_subject_id) {
-            if(new_subject_id === subject_id) throw new Error("Subject_id isn't change");
+        if (new_subject_id && subject_id !== new_subject_id) {
+            if(new_subject_id === subject_id) throw new Error("Subject_id isn't changed");
             updateCondition.subject_id = new_subject_id;
             existSubjectCondition.push({subject_id: new_subject_id})
         }

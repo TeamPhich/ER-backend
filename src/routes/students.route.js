@@ -14,9 +14,9 @@ router.get("/", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     studentsController.getInfomation);
 
-// router.put("/", tokenMiddleware.verify,
-//     privilegesMiddleware.verify(1),
-//     studentsController.putInformation)
+router.put("/", tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    studentsController.putInformation);
 
 router.delete("/:student_id", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),

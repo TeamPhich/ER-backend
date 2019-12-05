@@ -3,6 +3,7 @@ const responseUtil = require("../utils/responses.util");
 const excelToJson = require("convert-excel-to-json");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
+const Op = db.Sequelize.Op;
 
 async function importStudents(req, res) {
     try {
@@ -53,7 +54,14 @@ async function importStudents(req, res) {
 
 async function getInfomation(req, res) {
     try {
-        const students = await db.accounts.findAll({
+        let {page, pageSize} = req.query;
+        if(!page) page = 1;
+        if(!pageSize) pageSize = 15;
+        const offset = (page - 1) * pageSize;
+        const limit = Number(pageSize);
+        const students = await db.accounts.findAndCountAll({
+            offset,
+            limit,
             where: {
                 role_id: 2
             }
@@ -74,27 +82,52 @@ async function getInfomation(req, res) {
     }
 }
 
-// async function putInformation(req, res) {
-//     try {
-//         const
-//         res.json(responseUtil.success({data: {}}))
-//     } catch (err) {
-//         res.json(responseUtil.fail({reason: err.message}))
-//     }
-// }
+async function putInformation(req, res) {
+    try {
+        const {id, new_mssv, birthday, fullname} = req.body;
+        let updateCondition = {};
+        if (new_mssv) {
+            updateCondition.user_name = new_mssv;
+            const existMSSV = await db.accounts.findAll({
+                where: {
+                    user_name: new_mssv,
+                    id: {[Op.not]: id}
+                }
+            });
+            if (existMSSV.length) throw new Error("mssv bạn muốn cập nhật đã tồn tại!");
+        }
+        if (birthday) {
+            updateCondition.birthday = birthday;
+        }
+        if (fullname) {
+            updateCondition.fullname = fullname;
+        }
+        await db.accounts.update(
+            {...updateCondition},
+            {
+                where: {
+                    id: id
+                }
+            });
+
+        res.json(responseUtil.success({data: {}}))
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}))
+    }
+}
 
 async function deleteStudent(req, res) {
     const {student_id} = req.params;
     try {
         const isStudent = await db.accounts.findAll({
-            where:{
+            where: {
                 id: student_id,
                 role_id: 2
             }
         });
-        if(!isStudent.length) throw new Error("student is invalid");
+        if (!isStudent.length) throw new Error("student is invalid");
         await db.accounts.destroy({
-            where:{
+            where: {
                 id: student_id
             }
         });
@@ -107,6 +140,6 @@ async function deleteStudent(req, res) {
 module.exports = {
     importStudents,
     getInfomation,
-    // putInformation,
+    putInformation,
     deleteStudent
 };
