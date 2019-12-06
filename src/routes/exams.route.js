@@ -6,5 +6,7 @@ const privilegesMiddleware = require("../middlewares/privileges.middleware");
 
 router.post("/", tokenMiddleware.verify, privilegesMiddleware.verify(1), examsController.create);
 router.get("/", tokenMiddleware.verify, privilegesMiddleware.verify(1), examsController.getInformation);
+router.put("/", tokenMiddleware.verify, privilegesMiddleware.verify(1), examsController.updateInformation);
+router.delete("/:exam_id", tokenMiddleware.verify, privilegesMiddleware.verify(1), examsController.deleteExams);
 
 module.exports = router;
