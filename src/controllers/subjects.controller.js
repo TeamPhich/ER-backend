@@ -37,10 +37,9 @@ async function getInformation(req, res) {
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
         const subjectsInformation = await db.subjects.findAndCountAll({offset,limit});
-        subjectsInformation.map(subject => {
-            return subject.dataValues;
-        });
-        res.json(responseUtil.success({data: {subjectsInformation}}));
+        for (let i = 0; i < subjectsInformation.length; i++){
+            subjectsInformation[i] = subjectsInformation[i].dataValues
+        }
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
     }
