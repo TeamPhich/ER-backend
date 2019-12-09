@@ -10,5 +10,9 @@ module.exports = (sequelize, Sequelize) => {
         credit: {
             type: Sequelize.INTEGER
         }
+    }, {
+        indexes: [
+            { type: 'FULLTEXT', name: 'name_idx', fields: ['name'] }
+        ]
     });
 };

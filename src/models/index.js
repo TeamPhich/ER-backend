@@ -25,7 +25,6 @@ const sequelize = new Sequelize(
             freezeTableName: true
         },
         logging: false
-
     }
 );
 
@@ -38,7 +37,7 @@ db.privileges = require("./privileges.model")(sequelize, Sequelize);
 db.roles_privileges = require("./roles_privileges.model")(sequelize, Sequelize);
 db.subjects = require("./subjects.model")(sequelize, Sequelize);
 db.exams = require("./exams.model")(sequelize, Sequelize);
-db.subject_classes = require("./subject_classes.model")(sequelize,Sequelize);
+db.subject_classes = require("./subject_classes.model")(sequelize, Sequelize);
 db.students = require("./students.model")(sequelize, Sequelize);
 db.shifts_exams = require("./shifts.model")(sequelize, Sequelize);
 db.rooms = require("./rooms.model")(sequelize, Sequelize);

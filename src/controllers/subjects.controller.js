@@ -13,7 +13,7 @@ async function create(req, res) {
             where: {
                 [Op.or]: [
                     {subject_id: subject_id},
-                    {name: name}
+                    {name: name.toString()}
                 ]
             }
         });
@@ -31,12 +31,25 @@ async function create(req, res) {
 
 async function getInformation(req, res) {
     try {
-        let {page, pageSize} = req.query;
+        let {page, pageSize, keywords} = req.query;
         if(!page) page = 1;
         if(!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
-        const subjectsInformation = await db.subjects.findAndCountAll({offset,limit});
+        let conditionQuery = {
+            offset,
+            limit
+        };
+
+        if (keywords) {
+            keywords = "+" + keywords + "*";
+            conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)')
+            conditionQuery.replacements = {
+                name: keywords
+            };
+            if(!req.query.pageSize) conditionQuery.limit = 5;
+        }
+        const subjectsInformation = await db.subjects.findAndCountAll(conditionQuery);
         for (let i = 0; i < subjectsInformation.length; i++){
             subjectsInformation[i] = subjectsInformation[i].dataValues
         }
