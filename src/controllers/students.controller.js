@@ -54,18 +54,26 @@ async function importStudents(req, res) {
 
 async function getInfomation(req, res) {
     try {
-        let {page, pageSize} = req.query;
-        if(!page) page = 1;
-        if(!pageSize) pageSize = 15;
+        let {page, pageSize, keywords} = req.query;
+        if (!page) page = 1;
+        if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
-        const students = await db.accounts.findAndCountAll({
+        let conditionQuery = {
             offset,
             limit,
-            where: {
-                role_id: 2
-            }
-        });
+            where: [{role_id: 2}]
+        };
+
+        if (keywords) {
+            keywords = "+" + keywords + "*";
+            conditionQuery.replacements = {
+                name: keywords
+            };
+            if(!req.query.pageSize) conditionQuery.limit = 5;
+            conditionQuery.where.push(db.Sequelize.literal('MATCH (user_name) AGAINST (:name IN BOOLEAN MODE)'))
+        }
+        const students = await db.accounts.findAll(conditionQuery);
         for (let i = 0; i < students.length; i++) {
             const data = students[i].dataValues;
             students[i] = {

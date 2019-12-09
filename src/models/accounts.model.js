@@ -15,5 +15,9 @@ module.exports = (sequelize, Sequelize) => {
         email: {
             type: Sequelize.STRING
         }
+    }, {
+        indexes: [
+            { type: 'FULLTEXT', name: 'user_name_idx', fields: ['user_name'] }
+        ]
     });
 };
