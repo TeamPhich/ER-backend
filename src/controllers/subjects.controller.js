@@ -36,7 +36,7 @@ async function getInformation(req, res) {
         if(!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
-        const subjectsInformation = await db.subjects.findAll({offset,limit});
+        const subjectsInformation = await db.subjects.findAndCountAll({offset,limit});
         subjectsInformation.map(subject => {
             return subject.dataValues;
         });
