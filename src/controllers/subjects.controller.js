@@ -40,6 +40,7 @@ async function getInformation(req, res) {
         for (let i = 0; i < subjectsInformation.length; i++){
             subjectsInformation[i] = subjectsInformation[i].dataValues
         }
+        res.json(responseUtil.success({data: {subjectsInformation}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
     }
