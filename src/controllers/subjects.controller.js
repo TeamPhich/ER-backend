@@ -42,8 +42,8 @@ async function getInformation(req, res) {
         };
 
         if (keywords) {
-            keywords = "+" + keywords + "*";
-            conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)')
+            keywords = "+"+ keywords + "*";
+            conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');
             conditionQuery.replacements = {
                 name: keywords
             };
