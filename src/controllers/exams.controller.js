@@ -25,10 +25,16 @@ async function create(req, res) {
 
 async function getInformation(req, res) {
     try {
-        let exams = await db.exams.findAll();
-        exams.map(exam => {
-            return exam.dataValues
-        });
+        let {page, pageSize} = req.query;
+        if (!page) page = 1;
+        if (!pageSize) pageSize = 15;
+        const offset = (page - 1) * pageSize;
+        const limit = Number(pageSize);
+        let conditionQuery = {
+            offset,
+            limit
+        };
+        let exams = await db.exams.findAndCountAll(conditionQuery);
         res.json(responseUtil.success({data: {exams}}))
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));

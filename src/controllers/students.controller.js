@@ -48,7 +48,7 @@ async function importStudents(req, res) {
         fs.unlinkSync(filePath);
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
-        res.json(responseUtil.fail({reason: err.message}))
+        res.json(responseUtil.fail({reason: err.message}));
     }
 }
 
