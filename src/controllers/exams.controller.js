@@ -25,7 +25,7 @@ async function create(req, res) {
 
 async function getInformation(req, res) {
     try {
-        let {page, pageSize} = req.query;
+        let {page, pageSize, keywords} = req.query;
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
@@ -34,6 +34,16 @@ async function getInformation(req, res) {
             offset,
             limit
         };
+        if (keywords) {
+            keywords = keywords + "%";
+            conditionQuery.replacements = {
+                name: keywords
+            };
+            if (!req.query.pageSize) conditionQuery.limit = 5;
+            conditionQuery.where = {
+                id: {[Op.like]: keywords}
+            };
+        }
         let exams = await db.exams.findAndCountAll(conditionQuery);
         res.json(responseUtil.success({data: {exams}}))
     } catch (err) {
@@ -76,13 +86,13 @@ async function updateInformation(req, res) {
 async function deleteExams(req, res) {
     try {
         const {exam_id} = req.params;
-        if(!exam_id) throw new Error("exam_id params is missing");
+        if (!exam_id) throw new Error("exam_id params is missing");
         const existExam = await db.exams.findAll({
             where: {
                 id: exam_id
             }
         });
-        if(!existExam.length) throw new Error("exam isn't exist");
+        if (!existExam.length) throw new Error("exam isn't exist");
         await db.exams.destroy({
             where: {
                 id: exam_id
