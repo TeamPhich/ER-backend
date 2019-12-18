@@ -14,5 +14,14 @@ router.post("/exam/:exam_id/subject/:subject_id",
     privilegesMiddleware.verify(1),
     subjectClassesController.create);
 
+router.delete("/:subject_classes_id",
+    tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    subjectClassesController.destroy);
+
+router.put("/:subject_classes_id",
+    tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    subjectClassesController.update);
 
 module.exports = router;
