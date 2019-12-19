@@ -70,7 +70,7 @@ async function getInfomation(req, res) {
             conditionQuery.replacements = {
                 name: keywords
             };
-            if(!req.query.pageSize) conditionQuery.limit = 5;
+            if (!req.query.pageSize) conditionQuery.limit = 5;
             conditionQuery.where.push(db.Sequelize.literal('MATCH (user_name) AGAINST (:name IN BOOLEAN MODE)'))
         }
         const students = await db.accounts.findAndCountAll(conditionQuery);

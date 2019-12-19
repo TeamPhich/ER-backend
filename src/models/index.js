@@ -37,7 +37,7 @@ db.privileges = require("./privileges.model")(sequelize, Sequelize);
 db.roles_privileges = require("./roles_privileges.model")(sequelize, Sequelize);
 db.subjects = require("./subjects.model")(sequelize, Sequelize);
 db.exams = require("./exams.model")(sequelize, Sequelize);
-db.subject_classes = require("./subject_classes.model")(sequelize, Sequelize);
+db.exam_subjects = require("./exam-subjects.model")(sequelize, Sequelize);
 db.students = require("./students.model")(sequelize, Sequelize);
 db.shifts_exams = require("./shifts.model")(sequelize, Sequelize);
 db.rooms = require("./rooms.model")(sequelize, Sequelize);
@@ -58,18 +58,18 @@ db.roles_privileges.belongsTo(db.roles, {
     sourceKey: "id"
 });
 
-db.subject_classes.belongsTo(db.exams, {
+db.exam_subjects.belongsTo(db.exams, {
     foreignKey: "exam_id",
     sourceKey: "id"
 });
 
-db.subject_classes.belongsTo(db.subjects, {
+db.exam_subjects.belongsTo(db.subjects, {
     foreignKey: "subject_id",
     sourceKey: "id"
 });
 
-db.students.belongsTo(db.subject_classes, {
-    foreignKey: "subject_class_id",
+db.students.belongsTo(db.exam_subjects, {
+    foreignKey: "exam_subject_id",
     sourceKey: "id"
 });
 
