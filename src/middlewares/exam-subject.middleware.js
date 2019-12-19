@@ -5,7 +5,7 @@ const excelToJson = require("convert-excel-to-json");
 async function checkExamId(req, res, next) {
     try {
         let {exam_id} = req.params;
-        if(!exam_id) exam_id = req.body;
+        if (!exam_id) exam_id = req.body.exam_id;
         if (!exam_id) throw new Error("Exam_id params fields is missing");
         const existExam = await db.exams.findAll({
             where: {
@@ -19,7 +19,7 @@ async function checkExamId(req, res, next) {
     }
 }
 
-async function checkExamSubjectId(req,res, next) {
+async function checkExamSubjectId(req, res, next) {
     try {
         const {exam_subject_id} = req.params;
         if (!exam_subject_id) throw new Error("exam_subjects_id params fields is missing");
