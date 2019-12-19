@@ -16,7 +16,7 @@ router.post("/exam/:exam_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     examSubjectMiddleware.checkExamId,
-    examSubjectMiddleware.checkExamSubjectId,
+    examSubjectMiddleware.checkSubjectId,
     examSubjectsController.create);
 
 router.delete("/:exam_subject_id",
