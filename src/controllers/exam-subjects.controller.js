@@ -6,9 +6,6 @@ async function create(req, res) {
     try {
         const {exam_id} = req.params;
         const {subject_id} = req.body;
-        if (!exam_id) throw new Error("Exam_id params fields is missing");
-        if (!subject_id) throw new Error("subject_id body fields is missing");
-
         const existExamClasses = await db.exam_subjects.findAll({
             where: {
                 exam_id,
@@ -30,7 +27,6 @@ async function getInformation(req, res) {
     try {
         let {page, pageSize, keywords} = req.query;
         const {exam_id} = req.params;
-        if(!exam_id) throw new Error("exam_id params fields is missing");
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
@@ -63,7 +59,6 @@ async function getInformation(req, res) {
 async function destroy(req, res) {
     try {
         const {exam_subject_id} = req.params;
-        if (!exam_subject_id) throw new Error("exam_subjects_id params fields is missing");
         await db.exam_subjects.destroy({
             where: {id: exam_subject_id}
         });
@@ -77,8 +72,6 @@ async function update(req, res) {
     try {
         const {exam_subject_id} = req.params;
         const {exam_id, subject_id} = req.body;
-        if (!exam_id
-            || !subject_id) throw new Error("body params is missing some fields");
         const existExamSubject = await db.exam_subjects.findAll({
             where: {
                 exam_id,
@@ -185,7 +178,6 @@ async function importStudents(req, res) {
 
     try {
         if (!req.file) throw new Error("File is missing!");
-        if (!exam_subject_id) throw new Error("exam_subject_id params fields is missing");
         const filePath = req.file.path;
         let studentsSheetJSON = excelToJson({
             sourceFile: filePath,
@@ -217,7 +209,6 @@ async function getStudentsSubject(req, res) {
     try {
         let {page, pageSize, keywords} = req.query;
         const {exam_subject_id} = req.params;
-        if(!exam_subject_id) throw new Error("exam_subject_id params fields is missing");
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
