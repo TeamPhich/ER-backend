@@ -1,5 +1,6 @@
 const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
+const deleteDBUtil = require("../utils/deleteDB.util");
 const Op = db.Sequelize.Op;
 
 async function create(req, res) {
@@ -66,11 +67,7 @@ async function deleteSubject(req, res) {
             where: {subject_id}
         });
         if (!existedSubject.length) throw new Error("subject is not exist");
-        await db.subjects.destroy({
-            where: {
-                subject_id
-            }
-        });
+        await deleteDBUtil.deleteSubject(subject_id);
         res.json(responseUtil.success({data: {}}))
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));

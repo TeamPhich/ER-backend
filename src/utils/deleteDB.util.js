@@ -1,12 +1,12 @@
 const db = require("../models/index");
 const Op = db.Sequelize.Op;
 
-async function deleteExamSubjects(exam_subject_id) {
+async function deleteExamSubjects(exam_subjects) {
     try {
         await db.students.destroy({
             where: {
                 exam_subject_id: {
-                    [Op.in]: exam_subject_id
+                    [Op.in]: exam_subjects
                 }
             }
         });
@@ -14,7 +14,7 @@ async function deleteExamSubjects(exam_subject_id) {
         await db.shift_room.destroy({
             where: {
                 exam_subject_id: {
-                    [Op.in]: exam_subject_id
+                    [Op.in]: exam_subjects
                 }
             }
         });
@@ -22,7 +22,7 @@ async function deleteExamSubjects(exam_subject_id) {
         await db.exam_subjects.destroy({
             where: {
                 id: {
-                    [Op.in]: exam_subject_id
+                    [Op.in]: exam_subjects
                 }
             }
         });
@@ -96,9 +96,31 @@ async function deleteRooms(room_id) {
     }
 }
 
+async function deleteSubject(subject_id) {
+    try {
+        let examSubjects = await db.exam_subjects.findAll({
+            where: {
+                subject_id
+            }
+        });
+        for (let i = 0; i < examSubjects.length; i++) {
+            examSubjects[i] = examSubjects[i].dataValues.id
+        }
+        await deleteExamSubjects(examSubjects);
+        await db.subjects.destroy({
+            where: {
+                subject_id
+            }
+        })
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
 module.exports = {
     deleteExamSubjects,
     deleteShiftRoom,
     deleteExam,
-    deleteRooms
+    deleteRooms,
+    deleteSubject
 };
