@@ -1,6 +1,7 @@
 const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
 const excelToJson = require("convert-excel-to-json");
+const deleteDBUtil = require("../utils/deleteDB.util");
 
 async function create(req, res) {
     try {
@@ -14,7 +15,7 @@ async function create(req, res) {
                     subject_id: subjects[i]
                 }
             });
-            if(existExamClasses.length) existedSubject.push(subjects[i])
+            if (existExamClasses.length) existedSubject.push(subjects[i])
         }
         if (existedSubject.length) throw new Error("Môn thi đã tồn tại trong kì thi" + JSON.stringify(existedSubject));
         for (let i = 0; i < subjects.length; i++) {
@@ -65,9 +66,7 @@ async function getInformation(req, res) {
 async function destroy(req, res) {
     try {
         const {exam_subject_id} = req.params;
-        await db.exam_subjects.destroy({
-            where: {id: exam_subject_id}
-        });
+        await deleteDBUtil.deleteExamSubjects([exam_subject_id]);
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));

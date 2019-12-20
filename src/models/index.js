@@ -93,9 +93,9 @@ db.shift_room.belongsTo(db.shifts_exams, {
     sourceKey: "id"
 });
 
-db.shift_room.belongsTo(db.subjects, {
-    foreignKey: "subject_id",
-    sourceKey: "subject_id"
+db.shift_room.belongsTo(db.exam_subjects, {
+    foreignKey: "exam_subject_id",
+    sourceKey: "id"
 });
 
 module.exports = db;

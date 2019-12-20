@@ -1,5 +1,6 @@
 const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
+const deleteDbUtil = require("../utils/deleteDB.util");
 const Op = db.Sequelize.Op;
 
 async function create(req, res) {
@@ -97,11 +98,7 @@ async function deleteExams(req, res) {
             }
         });
         if (!existExam.length) throw new Error("exam isn't exist");
-        await db.exams.destroy({
-            where: {
-                id: exam_id
-            }
-        });
+        await deleteDbUtil.deleteExam(exam_id);
         res.json(responseUtil.success({data: {}}))
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
