@@ -1,4 +1,5 @@
 const db = require("../models/index");
+const deleteDBUtil = require("../utils/deleteDB.util");
 const responseUtil = require("../utils/responses.util");
 
 async function create(req, res) {
@@ -73,11 +74,7 @@ async function updateInformation(req, res) {
 async function deleteRooms(req, res) {
     try {
         const {room_id} = req.params;
-        await db.rooms.destroy({
-            where: {
-                id: room_id
-            }
-        });
+        await deleteDBUtil.deleteRooms(room_id);
         res.json(responseUtil.success({data: {}}))
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));

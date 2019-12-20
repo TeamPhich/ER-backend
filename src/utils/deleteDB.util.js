@@ -75,8 +75,30 @@ async function deleteExam(exam_id) {
     }
 }
 
+async function deleteRooms(room_id) {
+    try {
+        let shiftRoom = await db.shift_room.findAll({
+            where: {
+                room_id
+            }
+        });
+        for (let i = 0; i < shiftRoom.length; i++) {
+            shiftRoom[i] = shiftRoom[i].dataValues.id;
+        }
+        await deleteShiftRoom(shiftRoom);
+        await db.rooms.destroy({
+            where: {
+                id: room_id
+            }
+        })
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
 module.exports = {
     deleteExamSubjects,
     deleteShiftRoom,
-    deleteExam
+    deleteExam,
+    deleteRooms
 };

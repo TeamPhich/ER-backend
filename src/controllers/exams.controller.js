@@ -36,7 +36,7 @@ async function getInformation(req, res) {
             offset,
             limit
         };
-        if(page === isGetAll) {
+        if (page === isGetAll) {
             conditionQuery = {};
         }
         if (keywords) {
