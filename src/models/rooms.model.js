@@ -6,5 +6,9 @@ module.exports = (sequelize, Sequelize) => {
         slot: {
             type: Sequelize.INTEGER
         }
+    },{
+        indexes: [
+            { type: 'FULLTEXT', name: 'room_idx', fields: ['name'] }
+        ]
     });
 };

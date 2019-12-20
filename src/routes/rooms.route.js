@@ -1,24 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const tokenMiddleware = require("../middlewares/tokens.middleware");
-const examsController = require("../controllers/exams.controller");
+const roomsController = require("../controllers/rooms.controller");
+const paramsMiddleware = require("../middlewares/params.middleware");
 const privilegesMiddleware = require("../middlewares/privileges.middleware");
 
 router.post("/",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    examsController.create);
+    paramsMiddleware.checkRoomNameExisted,
+    roomsController.create);
+
 router.get("/",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    examsController.getInformation);
-router.put("/",
+    roomsController.getInformation);
+
+router.put("/:room_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    examsController.updateInformation);
-router.delete("/:exam_id",
+    paramsMiddleware.checkRoomIdExisted,
+    roomsController.updateInformation);
+
+router.delete("/:room_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    examsController.deleteExams);
+    paramsMiddleware.checkRoomIdExisted,
+    roomsController.deleteRooms);
 
 module.exports = router;

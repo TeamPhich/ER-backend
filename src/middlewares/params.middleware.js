@@ -52,8 +52,42 @@ async function checkSubjectId(req, res, next) {
     }
 }
 
+async function checkRoomNameExisted(req, res, next) {
+    try {
+        const {name} = req.body;
+        if (!name) throw new Error("name params fields is missing");
+        const existName = await db.rooms.findAll({
+            where: {
+                name
+            }
+        });
+        if (existName.length) throw new Error("room name is existed");
+        next();
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
+async function checkRoomIdExisted(req, res, next) {
+    try {
+        const {room_id} = req.params;
+        if (!room_id) throw new Error("room_id params fields is missing");
+        const existRoom = await db.rooms.findAll({
+            where: {
+                id: room_id
+            }
+        });
+        if (!existRoom.length) throw new Error("room is not existed");
+        next();
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
 module.exports = {
     checkExamId,
     checkExamSubjectId,
-    checkSubjectId
+    checkSubjectId,
+    checkRoomNameExisted,
+    checkRoomIdExisted
 };
