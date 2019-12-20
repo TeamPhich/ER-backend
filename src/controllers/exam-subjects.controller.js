@@ -5,18 +5,24 @@ const excelToJson = require("convert-excel-to-json");
 async function create(req, res) {
     try {
         const {exam_id} = req.params;
-        const {subject_id} = req.body;
-        const existExamClasses = await db.exam_subjects.findAll({
-            where: {
+        const {subjects} = req.body;
+        const existedSubject = [];
+        for (let i = 0; i < subjects.length; i++) {
+            const existExamClasses = await db.exam_subjects.findAll({
+                where: {
+                    exam_id,
+                    subject_id: subjects[i]
+                }
+            });
+            if(existExamClasses.length) existedSubject.push(subjects[i])
+        }
+        if (existedSubject.length) throw new Error("Môn thi đã tồn tại trong kì thi" + JSON.stringify(existedSubject));
+        for (let i = 0; i < subjects.length; i++) {
+            await db.exam_subjects.create({
                 exam_id,
-                subject_id
-            }
-        });
-        if (existExamClasses.length) throw new Error("Môn thi đã tồn tại trong kì thi");
-        await db.exam_subjects.create({
-            exam_id,
-            subject_id
-        });
+                subject_id: subjects[i]
+            });
+        }
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
