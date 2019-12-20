@@ -26,6 +26,7 @@ async function create(req, res) {
 async function getInformation(req, res) {
     try {
         let {page, pageSize, keywords} = req.query;
+        const isGetAll = "-1";
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
@@ -34,12 +35,15 @@ async function getInformation(req, res) {
             offset,
             limit
         };
+        if(page === isGetAll) {
+            conditionQuery = {};
+        }
         if (keywords) {
             keywords = keywords + "%";
             conditionQuery.replacements = {
                 name: keywords
             };
-            if (!req.query.pageSize) conditionQuery.limit = 5;
+            if (!req.query && page !== -1) conditionQuery.limit = 5;
             conditionQuery.where = {
                 id: {[Op.like]: keywords}
             };
