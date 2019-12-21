@@ -121,11 +121,28 @@ async function checkStartFinishTimeShift(req, res, next) {
     }
 }
 
+async function checkShiftId(req, res, next) {
+    try {
+        const {shift_id} = req.params;
+        if (!shift_id) throw new Error("shift_id params fields is missing");
+        const existedShiftId = await db.shifts.findAll({
+            where: {
+                id: shift_id
+            }
+        });
+        if(!existedShiftId.length) throw new Error("shift_id isn't existed");
+        next()
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
 module.exports = {
     checkExamId,
     checkExamSubjectId,
     checkSubjectId,
     checkRoomNameExisted,
     checkRoomIdExisted,
-    checkStartFinishTimeShift
+    checkStartFinishTimeShift,
+    checkShiftId
 };

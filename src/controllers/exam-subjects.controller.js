@@ -276,6 +276,7 @@ async function getSubjects(req, res) {
                 subject_id: {
                     [Op.in]: idSubjects
                 },
+                exam_id
             },
             attribute: ["subject_id"]
         });
