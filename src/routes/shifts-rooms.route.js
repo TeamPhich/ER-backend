@@ -8,12 +8,15 @@ const paramsMiddleware = require("../middlewares/params.middleware");
 router.get("/shift/:shift_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
+    paramsMiddleware.checkShiftId,
     shiftsRoomsController.getInformation);
 
 router.post("/shift/:shift_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     paramsMiddleware.checkShiftId,
+    paramsMiddleware.checkRoomIdExisted,
+    paramsMiddleware.checkExamSubjectId,
     shiftsRoomsController.create);
 
 router.put("/:shift_room",

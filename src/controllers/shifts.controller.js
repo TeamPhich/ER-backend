@@ -7,8 +7,6 @@ async function create(req, res) {
     try {
         const {start_time, finish_time} = req.body;
         const {exam_id} = req.params;
-
-
         await db.shifts.create({
             start_time,
             finish_time,

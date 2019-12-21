@@ -23,7 +23,8 @@ async function checkExamId(req, res, next) {
 
 async function checkExamSubjectId(req, res, next) {
     try {
-        const {exam_subject_id} = req.params;
+        let {exam_subject_id} = req.params;
+        if (!exam_subject_id) exam_subject_id = req.body.exam_subject_id;
         if (!exam_subject_id) throw new Error("exam_subjects_id params fields is missing");
         const existExamSubject = await db.exam_subjects.findAll({
             where: {
@@ -72,7 +73,8 @@ async function checkRoomNameExisted(req, res, next) {
 
 async function checkRoomIdExisted(req, res, next) {
     try {
-        const {room_id} = req.params;
+        let {room_id} = req.params;
+        if (!room_id) room_id = req.body.room_id;
         if (!room_id) throw new Error("room_id params fields is missing");
         const existRoom = await db.rooms.findAll({
             where: {
@@ -89,14 +91,14 @@ async function checkRoomIdExisted(req, res, next) {
 async function checkStartFinishTimeShift(req, res, next) {
     try {
         const {start_time, finish_time} = req.body;
-        const {exam_id} = req.params;
+        const {exam_id, shift_id} = req.params;
         if (!start_time
             || !finish_time) throw new Error("start_time or finish_time params is missing");
         if (isNaN(start_time)
             || isNaN(finish_time)) throw new Error("start_time or finish_time params can't NaN");
         if (finish_time <= start_time)
             throw new Error("start_time is later than finish_time");
-        const existedShift = await db.shifts.findAll({
+        let condition = {
             where: {
                 start_time: {
                     [Op.or]: [
@@ -112,7 +114,13 @@ async function checkStartFinishTimeShift(req, res, next) {
                 },
                 exam_id
             }
-        });
+        };
+        if (shift_id) {
+            condition.where.id = {
+                [Op.not]: [shift_id]
+            }
+        }
+        const existedShift = await db.shifts.findAll(condition);
         if (existedShift.length)
             throw new Error("Đã có ca thi trong khung thời gian này");
         next();
@@ -130,7 +138,7 @@ async function checkShiftId(req, res, next) {
                 id: shift_id
             }
         });
-        if(!existedShiftId.length) throw new Error("shift_id isn't existed");
+        if (!existedShiftId.length) throw new Error("shift_id isn't existed");
         next()
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
