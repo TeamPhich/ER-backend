@@ -5,10 +5,11 @@ const shiftsRoomsController = require("../controllers/shifts-rooms.controller");
 const privilegesMiddleware = require("../middlewares/privileges.middleware");
 const paramsMiddleware = require("../middlewares/params.middleware");
 
-router.get("/shift/:shift_id",
+router.get("/shift/:shift_id/exam/:exam_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     paramsMiddleware.checkShiftId,
+    paramsMiddleware.checkExamId,
     shiftsRoomsController.getInformation);
 
 router.post("/shift/:shift_id",

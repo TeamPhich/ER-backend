@@ -5,9 +5,8 @@ const Op = db.Sequelize.Op;
 
 async function getInformation(req, res) {
     try {
-        const {shift_id} = req.params;
+        const {shift_id, exam_id} = req.params;
         let {page, pageSize, keywords} = req.query;
-        const {exam_id} = req.params;
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
@@ -16,22 +15,40 @@ async function getInformation(req, res) {
             offset,
             limit,
             where: {
-                exam_id
-            },
-            include: {
-                model: db.subjects,
-                attributes: ["name", "credit"]
+                shift_id,
+
             }
         };
         if (keywords) {
             keywords = "+" + keywords + "*";
-            conditionQuery.include.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');
-            conditionQuery.replacements = {
-                name: keywords
+            const exam_subject = await db.exam_subjects.findAll({
+                where: {
+                    exam_id
+                },
+                include: {
+                    model: db.subjects,
+                    where: db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)')
+                },
+                replacements: {
+                    name: keywords
+                }
+            });
+            let exam_subject_id = [];
+            for (let i = 0; i < exam_subject.length; i++) {
+                exam_subject_id.push(exam_subject[i].dataValues.id)
+            }
+            conditionQuery.where.exam_subject_id = {
+                [Op.in]: exam_subject_id
+            };
+            conditionQuery.include = {
+                model: db.exam_subjects,
+                include: [{
+                    model: db.subjects,
+                }]
             };
         }
-        let exam_subjects = await db.exam_subjects.findAndCountAll(conditionQuery);
-        res.json(responseUtil.success({data: {}}));
+        let shifts_rooms = await db.shift_room.findAndCountAll(conditionQuery);
+        res.json(responseUtil.success({data: {shifts_rooms}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
     }
@@ -39,6 +56,8 @@ async function getInformation(req, res) {
 
 async function create(req, res) {
     try {
+        const {examOfExamSubject, examOfShiftId} = req;
+        if(examOfExamSubject !== examOfShiftId) throw new Error("examSubject and shift is different exam");
         const {shift_id} = req.params;
         const {exam_subject_id, room_id} = req.body;
         const existedShiftRoom = await db.shift_room.findAll({

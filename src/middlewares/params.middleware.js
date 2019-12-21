@@ -32,6 +32,7 @@ async function checkExamSubjectId(req, res, next) {
             }
         });
         if (!existExamSubject.length) throw new Error("exam_subject_id is not existed");
+        req.examOfExamSubject = existExamSubject[0].dataValues.exam_id;
         next()
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
@@ -139,6 +140,7 @@ async function checkShiftId(req, res, next) {
             }
         });
         if (!existedShiftId.length) throw new Error("shift_id isn't existed");
+        req.examOfShiftId = existedShiftId[0].dataValues.exam_id;
         next()
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
