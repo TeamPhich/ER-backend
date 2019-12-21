@@ -2,6 +2,7 @@ const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
 const excelToJson = require("convert-excel-to-json");
 const deleteDBUtil = require("../utils/deleteDB.util");
+const Op = db.Sequelize.Op;
 
 async function create(req, res) {
     try {
@@ -248,35 +249,45 @@ async function getSubjects(req, res) {
     try {
         let {page, pageSize, keywords} = req.query;
         const {exam_id} = req.params;
-        if(!page) page = 1;
-        if(!pageSize) pageSize = 15;
+        if (!page) page = 1;
+        if (!pageSize) pageSize = 15;
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
         let conditionQuery = {
             offset,
-            limit,
-            include: [
-                {
-                    model: db.exam_subjects,
-                    where: {
-                        exam_id
-                    },
-                    required: false,
-                }
-            ]
+            limit
         };
 
         if (keywords) {
-            keywords = "+"+ keywords + "*";
+            keywords = "+" + keywords + "*";
             conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');
             conditionQuery.replacements = {
                 name: keywords
             };
-            if(!req.query.pageSize) conditionQuery.limit = 5;
+            if (!req.query.pageSize) conditionQuery.limit = 5;
         }
-        const subjectsInformation = await db.subjects.findAndCountAll(conditionQuery);
-        for (let i = 0; i < subjectsInformation.length; i++){
-            subjectsInformation[i] = subjectsInformation[i].dataValues
+        let subjectsInformation = await db.subjects.findAndCountAll(conditionQuery);
+        let idSubjects = [];
+        for (let i = 0; i < subjectsInformation.rows.length; i++) {
+            idSubjects.push(subjectsInformation.rows[i].subject_id)
+        }
+        let exam_subject = await db.exam_subjects.findAll({
+            where: {
+                subject_id: {
+                    [Op.in]: idSubjects
+                },
+            },
+            attribute: ["subject_id"]
+        });
+        for(let i =0; i < subjectsInformation.rows.length; i++){
+            let ExamSubjectFlag = false;
+
+            for(let j = 0; j < exam_subject.length; j++){
+                if(subjectsInformation.rows[i].dataValues.subject_id === exam_subject[j].dataValues.subject_id){
+                    ExamSubjectFlag = true
+                }
+            }
+            subjectsInformation.rows[i].dataValues.exam_subjects = ExamSubjectFlag
         }
         res.json(responseUtil.success({data: {subjectsInformation}}));
     } catch (err) {

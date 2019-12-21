@@ -38,7 +38,6 @@ router.put("/:exam_subject_id",
     paramsMiddleware.checkSubjectId,
     examSubjectsController.update);
 
-
 router.post("/:exam_subject_id/students",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
