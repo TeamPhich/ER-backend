@@ -266,14 +266,14 @@ async function getSubjects(req, res) {
             ]
         };
 
-        // if (keywords) {
-        //     keywords = "+"+ keywords + "*";
-        //     conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');
-        //     conditionQuery.replacements = {
-        //         name: keywords
-        //     };
-        //     if(!req.query.pageSize) conditionQuery.limit = 5;
-        // }
+        if (keywords) {
+            keywords = "+"+ keywords + "*";
+            conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');
+            conditionQuery.replacements = {
+                name: keywords
+            };
+            if(!req.query.pageSize) conditionQuery.limit = 5;
+        }
         const subjectsInformation = await db.subjects.findAndCountAll(conditionQuery);
         for (let i = 0; i < subjectsInformation.length; i++){
             subjectsInformation[i] = subjectsInformation[i].dataValues
