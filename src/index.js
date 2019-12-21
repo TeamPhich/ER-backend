@@ -11,6 +11,7 @@ const subjects = require("./routes/subjects.route");
 const examSubjects = require("./routes/exam-subjects.route");
 const exams = require("./routes/exams.route");
 const rooms = require("./routes/rooms.route");
+const shifts = require("./routes/shifts.route");
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/v1/students/", students);
 app.use("/api/v1/exams/", exams);
 app.use("/api/v1/exam-subjects/", examSubjects);
 app.use("/api/v1/rooms/", rooms);
+app.use("/api/v1/shifts/", shifts);
 
 app.use("/api/v1", (req, res) => {
     res.send("ER-backend");

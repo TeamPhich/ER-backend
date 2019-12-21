@@ -244,11 +244,52 @@ async function getStudentsSubject(req, res) {
     }
 }
 
+async function getSubjects(req, res) {
+    try {
+        let {page, pageSize, keywords} = req.query;
+        const {exam_id} = req.params;
+        if(!page) page = 1;
+        if(!pageSize) pageSize = 15;
+        const offset = (page - 1) * pageSize;
+        const limit = Number(pageSize);
+        let conditionQuery = {
+            offset,
+            limit,
+            include: [
+                {
+                    model: db.exam_subjects,
+                    where: {
+                        exam_id
+                    },
+                    required: false,
+                }
+            ]
+        };
+
+        // if (keywords) {
+        //     keywords = "+"+ keywords + "*";
+        //     conditionQuery.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');
+        //     conditionQuery.replacements = {
+        //         name: keywords
+        //     };
+        //     if(!req.query.pageSize) conditionQuery.limit = 5;
+        // }
+        const subjectsInformation = await db.subjects.findAndCountAll(conditionQuery);
+        for (let i = 0; i < subjectsInformation.length; i++){
+            subjectsInformation[i] = subjectsInformation[i].dataValues
+        }
+        res.json(responseUtil.success({data: {subjectsInformation}}));
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
 module.exports = {
     create,
     getInformation,
     destroy,
     update,
     importStudents,
-    getStudentsSubject
+    getStudentsSubject,
+    getSubjects
 };

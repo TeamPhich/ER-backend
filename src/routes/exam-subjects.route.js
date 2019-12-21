@@ -12,6 +12,12 @@ router.get("/exam/:exam_id",
     paramsMiddleware.checkExamId,
     examSubjectsController.getInformation);
 
+router.get("/exam/:exam_id/subjects",
+    tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    paramsMiddleware.checkExamId,
+    examSubjectsController.getSubjects);
+
 router.post("/exam/:exam_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),

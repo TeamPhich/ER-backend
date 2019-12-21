@@ -65,6 +65,11 @@ async function deleteExam(exam_id) {
             examSubjects[i] = examSubjects[i].dataValues.id;
         }
         await deleteExamSubjects(examSubjects);
+        await db.shifts.destroy({
+            where: {
+                exam_id
+            }
+        });
         await db.exams.destroy({
             where: {
                 id: exam_id
