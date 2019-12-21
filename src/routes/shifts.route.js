@@ -9,6 +9,7 @@ router.post("/exam/:exam_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     paramsMiddleware.checkExamId,
+    paramsMiddleware.checkStartFinishTimeShift,
     shiftsController.create);
 
 router.get("/exam/:exam_id",
@@ -17,15 +18,15 @@ router.get("/exam/:exam_id",
     paramsMiddleware.checkExamId,
     shiftsController.getInformation);
 
-router.put("/:shift_id",
+router.put("/:shift_id/exam/:exam_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
+    paramsMiddleware.checkStartFinishTimeShift,
     shiftsController.updateInformation);
 
-router.delete("/:room_id",
+router.delete("/:shift_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    paramsMiddleware.checkRoomIdExisted,
     shiftsController.deleteShift);
 
 module.exports = router;

@@ -42,12 +42,35 @@ db.students = require("./students.model")(sequelize, Sequelize);
 db.shifts = require("./shifts.model")(sequelize, Sequelize);
 db.rooms = require("./rooms.model")(sequelize, Sequelize);
 db.shift_room = require("./shifts_rooms.model")(sequelize, Sequelize);
+//roles
+db.roles.hasMany(db.accounts, {
+    foreignKey: "role_id",
+    sourceKey: "id"
+});
 
+db.roles.hasMany(db.roles_privileges, {
+    foreignKey: "role_id",
+    sourceKey: "id"
+});
+
+//privileges
+db.privileges.hasMany(db.roles_privileges, {
+    foreignKey: "privilege_id",
+    sourceKey: "id"
+});
+
+//accounts
 db.accounts.belongsTo(db.roles, {
     foreignKey: "role_id",
     sourceKey: "id"
 });
 
+db.accounts.hasMany(db.students, {
+    foreignKey: "account_id",
+    sourceKey: "id",
+});
+
+//role_privileges
 db.roles_privileges.belongsTo(db.privileges, {
     foreignKey: "privilege_id",
     sourceKey: "id"
@@ -58,14 +81,27 @@ db.roles_privileges.belongsTo(db.roles, {
     sourceKey: "id"
 });
 
-db.exam_subjects.belongsTo(db.exams, {
+//exams
+db.exams.hasMany(db.exam_subjects, {
     foreignKey: "exam_id",
     sourceKey: "id"
 });
 
-db.subjects.hasMany(db.exam_subjects,{
+db.exams.hasMany(db.shifts, {
+    foreignKey: "exam_id",
+    sourceKey: "id"
+});
+
+//subjects
+db.subjects.hasMany(db.exam_subjects, {
     foreignKey: "subject_id",
     sourceKey: "subject_id"
+});
+
+//exam_subjects
+db.exam_subjects.belongsTo(db.exams, {
+    foreignKey: "exam_id",
+    sourceKey: "id"
 });
 
 db.exam_subjects.belongsTo(db.subjects, {
@@ -73,6 +109,17 @@ db.exam_subjects.belongsTo(db.subjects, {
     sourceKey: "id"
 });
 
+db.exam_subjects.hasMany(db.students, {
+    foreignKey: "exam_subject_id",
+    sourceKey: "id"
+});
+
+db.exam_subjects.hasMany(db.shift_room, {
+    foreignKey: "exam_subject_id",
+    sourceKey: "id"
+});
+
+//students
 db.students.belongsTo(db.exam_subjects, {
     foreignKey: "exam_subject_id",
     sourceKey: "id"
@@ -80,8 +127,7 @@ db.students.belongsTo(db.exam_subjects, {
 
 db.students.belongsTo(db.accounts, {
     foreignKey: "account_id",
-    sourceKey: "id",
-
+    sourceKey: "id"
 });
 
 db.students.belongsTo(db.shift_room, {
@@ -89,9 +135,27 @@ db.students.belongsTo(db.shift_room, {
     sourceKey: "id"
 });
 
+//shifts
 db.shifts.belongsTo(db.exams, {
-   foreignKey: "exam_id",
-   sourceKey: "id"
+    foreignKey: "exam_id",
+    sourceKey: "id"
+});
+
+db.shifts.hasMany(db.shift_room, {
+    foreignKey: "shift_id",
+    sourceKey: "id"
+});
+
+//rooms
+db.rooms.hasMany(db.shift_room, {
+    foreignKey: "room_id",
+    sourceKey: "id"
+});
+
+//shifts_rooms
+db.shift_room.hasMany(db.students, {
+    foreignKey: "shift_room",
+    sourceKey: "id"
 });
 
 db.shift_room.belongsTo(db.rooms, {

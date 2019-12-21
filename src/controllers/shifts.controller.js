@@ -7,31 +7,8 @@ async function create(req, res) {
     try {
         const {start_time, finish_time} = req.body;
         const {exam_id} = req.params;
-        if (!start_time
-            || !finish_time) throw new Error("start_time or finish_time params is missing");
-        if (isNaN(start_time)
-            || isNaN(finish_time)) throw new Error("start_time or finish_time params can't NaN");
-        if (finish_time <= start_time)
-            throw new Error("start_time is later than finish_time");
-        const existedShift = await db.shifts.findAll({
-            where: {
-                start_time: {
-                    [Op.or]: [
-                        {[Op.between]: [start_time, finish_time]},
-                        {[Op.lte]: [start_time]}
-                    ]
-                },
-                finish_time: {
-                    [Op.or]: [
-                        {[Op.between]: [start_time, finish_time]},
-                        {[Op.gte]: [finish_time]}
-                    ]
-                },
-                exam_id
-            }
-        });
-        if (existedShift.length)
-            throw new Error("Đã có ca thi trong khung thời gian này");
+
+
         await db.shifts.create({
             start_time,
             finish_time,
@@ -58,8 +35,8 @@ async function getInformation(req, res) {
                 exam_id
             }
         };
-        if(sortColumn && sortType) {
-            conditionQuery.order = [[sortColumn,sortType]]
+        if (sortColumn && sortType) {
+            conditionQuery.order = [[sortColumn, sortType]]
         }
         const shifts = await db.shifts.findAndCountAll(conditionQuery);
         res.json(responseUtil.success({data: {shifts}}))
@@ -71,8 +48,23 @@ async function getInformation(req, res) {
 async function updateInformation(req, res) {
     try {
         const {shift_id} = req.params;
-        if(!shift_id)
+        const {start_time, finish_time} = req.body;
+        if (!shift_id)
             throw new Error("shift_id params fields is missing");
+        const shiftExisted = await db.shifts.findAll({
+            where: {
+                id: shift_id
+            }
+        });
+        if (!shiftExisted.length) throw new Error("shift isn't existed");
+        await db.shifts.update({
+            start_time,
+            finish_time
+        }, {
+            where: {
+                id: shift_id
+            }
+        });
         res.json(responseUtil.success({data: {}}))
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
@@ -81,6 +73,16 @@ async function updateInformation(req, res) {
 
 async function deleteShift(req, res) {
     try {
+        const {shift_id} = req.params;
+        if (!shift_id)
+            throw new Error("shift_id params fields is missing");
+        const shiftExisted = await db.shifts.findAll({
+            where: {
+                id: shift_id
+            }
+        });
+        await deleteDBUtil.deleteShift(shift_id);
+        if (!shiftExisted.length) throw new Error("shift isn't existed");
 
         res.json(responseUtil.success({data: {}}))
     } catch (err) {

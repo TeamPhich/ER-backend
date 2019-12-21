@@ -1,6 +1,8 @@
 const db = require("../models/index");
 const responseUtil = require("../utils/responses.util");
 const excelToJson = require("convert-excel-to-json");
+const Op = db.Sequelize.Op;
+
 
 async function checkExamId(req, res, next) {
     try {
@@ -84,10 +86,46 @@ async function checkRoomIdExisted(req, res, next) {
     }
 }
 
+async function checkStartFinishTimeShift(req, res, next) {
+    try {
+        const {start_time, finish_time} = req.body;
+        const {exam_id} = req.params;
+        if (!start_time
+            || !finish_time) throw new Error("start_time or finish_time params is missing");
+        if (isNaN(start_time)
+            || isNaN(finish_time)) throw new Error("start_time or finish_time params can't NaN");
+        if (finish_time <= start_time)
+            throw new Error("start_time is later than finish_time");
+        const existedShift = await db.shifts.findAll({
+            where: {
+                start_time: {
+                    [Op.or]: [
+                        {[Op.between]: [start_time, finish_time]},
+                        {[Op.lte]: [start_time]}
+                    ]
+                },
+                finish_time: {
+                    [Op.or]: [
+                        {[Op.between]: [start_time, finish_time]},
+                        {[Op.gte]: [finish_time]}
+                    ]
+                },
+                exam_id
+            }
+        });
+        if (existedShift.length)
+            throw new Error("Đã có ca thi trong khung thời gian này");
+        next();
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
 module.exports = {
     checkExamId,
     checkExamSubjectId,
     checkSubjectId,
     checkRoomNameExisted,
-    checkRoomIdExisted
+    checkRoomIdExisted,
+    checkStartFinishTimeShift
 };
