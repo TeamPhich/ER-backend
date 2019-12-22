@@ -12,7 +12,6 @@ router.post("/",
     examsController.create);
 router.get("/",
     tokenMiddleware.verify,
-    privilegesMiddleware.verify(1),
     examsController.getInformation);
 router.put("/",
     tokenMiddleware.verify,

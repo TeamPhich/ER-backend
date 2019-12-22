@@ -155,10 +155,15 @@ async function getExamSubjects(req, res) {
                 id: exam_id
             }
         });
-        console.log(exam.dataValues.start_time);
+
+
+
         const examSubjects = await db.exam_subjects.findAll({
-            where: {
-                account_id: id
+            include: {
+                model: db.students,
+                where: {
+                    account_id: id
+                }
             }
         });
 

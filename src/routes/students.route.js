@@ -23,7 +23,7 @@ router.delete("/:student_id", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     studentsController.deleteStudent);
 
-router.get("/exam/:exam_id/exam_subject",
+router.get("/exam/:exam_id/exam-subject",
     tokenMiddleware.verify,
     paramsMiddleware.checkExamId,
     studentsController.getExamSubjects);
