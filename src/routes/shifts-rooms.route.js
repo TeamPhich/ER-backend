@@ -20,12 +20,13 @@ router.post("/shift/:shift_id",
     paramsMiddleware.checkExamSubjectId,
     shiftsRoomsController.create);
 
-router.put("/:shift_room",
+router.put("/:shift_room_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
+    paramsMiddleware.checkShiftRoom,
     shiftsRoomsController.update);
 
-router.delete("/:shift_id",
+router.delete("/:shift_room",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     shiftsRoomsController.update

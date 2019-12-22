@@ -17,7 +17,15 @@ async function getInformation(req, res) {
             where: {
                 shift_id,
 
-            }
+            },
+            include: [{
+                model: db.exam_subjects,
+                include: [{
+                    model: db.subjects,
+                }]
+            },{
+                model: db.rooms,
+            }]
         };
         if (keywords) {
             keywords = "+" + keywords + "*";
@@ -39,12 +47,6 @@ async function getInformation(req, res) {
             }
             conditionQuery.where.exam_subject_id = {
                 [Op.in]: exam_subject_id
-            };
-            conditionQuery.include = {
-                model: db.exam_subjects,
-                include: [{
-                    model: db.subjects,
-                }]
             };
         }
         let shifts_rooms = await db.shift_room.findAndCountAll(conditionQuery);
@@ -94,6 +96,8 @@ async function create(req, res) {
 
 async function update(req, res) {
     try {
+        const {shift_room_id} = req.params;
+
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));

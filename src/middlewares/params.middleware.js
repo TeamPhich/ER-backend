@@ -141,7 +141,23 @@ async function checkShiftId(req, res, next) {
         });
         if (!existedShiftId.length) throw new Error("shift_id isn't existed");
         req.examOfShiftId = existedShiftId[0].dataValues.exam_id;
-        next()
+        next();
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
+async function checkShiftRoom(req, res, next) {
+    try {
+        const {shift_room_id} = req.params;
+        if (!shift_room_id) throw new Error("shift_room params fields is missing");
+        const existShiftRoom = await db.shift_room.findAll({
+            where: {
+                id: shift_room_id
+            }
+        });
+        if (!existShiftRoom.length) throw new Error("shift_room isn't exited");
+        next();
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
     }
@@ -154,5 +170,6 @@ module.exports = {
     checkRoomNameExisted,
     checkRoomIdExisted,
     checkStartFinishTimeShift,
-    checkShiftId
+    checkShiftId,
+    checkShiftRoom
 };
