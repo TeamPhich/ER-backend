@@ -7,7 +7,7 @@ const db = require("./src/models/index");
 const port = config.get("PORT");
 const secretkey = config.get("SECRET_KEY");
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, , { origins: '*:*'});
 
 io.use((socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
