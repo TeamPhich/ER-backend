@@ -56,8 +56,4 @@ db.sequelize.sync()
         process.exit();
     });
 
-app.listen(port, () => {
-    console.log("ER-backend is running on PORT:", port)
-});
-
 module.exports = app;

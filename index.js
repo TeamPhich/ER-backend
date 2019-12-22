@@ -1,1 +1,1 @@
-require("./src/index");
+require("./socket");

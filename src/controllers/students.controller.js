@@ -158,7 +158,7 @@ async function getExamSubjects(req, res) {
 
         const now = Date.now() / 1000;
         if (exam[0].dataValues.start_time - now > 15 * 60) {
-            // throw new Error("Ngoài giờ đăng kí");
+            throw new Error("Ngoài giờ đăng kí");
         }
 
         let examSubjects = await db.exam_subjects.findAndCountAll({
@@ -169,6 +169,18 @@ async function getExamSubjects(req, res) {
                 model: db.students,
                 where: {
                     account_id: id
+                },
+                include: {
+                    model: db.exam_subjects,
+                    include: [{
+                        model: db.shift_room,
+                        include: [{
+                            model: db.shifts
+                        }, {
+                            model: db.rooms
+                        }]
+                    }],
+                    attributes: ['id']
                 }
             }, {
                 model: db.subjects
