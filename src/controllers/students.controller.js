@@ -150,22 +150,39 @@ async function getExamSubjects(req, res) {
         const {id} = req.tokenData;
         const {exam_id} = req.params;
 
-        const exam = db.exams.findOne({
+        const exam = await db.exams.findAll({
             where: {
                 id: exam_id
             }
         });
 
+        const now = Date.now() / 1000;
+        if (exam[0].dataValues.start_time - now > 15 * 60) {
+            throw new Error("Ngoài giờ đăng kí");
+        }
 
-
-        const examSubjects = await db.exam_subjects.findAll({
-            include: {
+        let examSubjects = await db.exam_subjects.findAndCountAll({
+            where: {
+                exam_id
+            },
+            include: [{
                 model: db.students,
                 where: {
                     account_id: id
                 }
-            }
+            }, {
+                model: db.subjects
+            }]
         });
+        let countConditionSubject = 0;
+        let countNotConditionSubject = 0;
+        for(let i = 0; i < examSubjects.rows.length; i++) {
+            if(examSubjects.rows[i].dataValues.students.enoughCondition)
+                countConditionSubject++;
+            else countNotConditionSubject++;
+        }
+        examSubjects.countConditionSubject = countConditionSubject;
+        examSubjects.countNotConditionSubject = countNotConditionSubject;
 
         res.json(responseUtil.success({data: {examSubjects}}))
     } catch (err) {
