@@ -1,5 +1,5 @@
 {
-  "PORT": 6000,
+  "PORT": 3000,
   "database": {
     "host": "18.162.125.153",
     "name": "ER-backend",
