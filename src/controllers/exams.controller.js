@@ -4,8 +4,11 @@ const deleteDbUtil = require("../utils/deleteDB.util");
 const Op = db.Sequelize.Op;
 
 async function create(req, res) {
-    const {id, name} = req.body;
+    const {id, name, registTime} = req.body;
+
     try {
+        if (!registTime)
+            throw new Error("registTime params field is missing");
         if (!id) throw new Error("id fields is missing");
         if (!name) throw new Error("name field is missing");
         const existExam = await db.exams.findAll({
@@ -16,7 +19,8 @@ async function create(req, res) {
         if (existExam.length) throw new Error("Mã kì thi đã tồn tại!");
         await db.exams.create({
             id,
-            name
+            name,
+            registTime
         });
         res.json(responseUtil.success({data: {}}))
     } catch (err) {

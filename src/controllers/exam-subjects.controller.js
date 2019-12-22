@@ -8,6 +8,7 @@ async function create(req, res) {
     try {
         const {exam_id} = req.params;
         const {subjects} = req.body;
+
         const existedSubject = [];
         for (let i = 0; i < subjects.length; i++) {
             const existExamClasses = await db.exam_subjects.findAll({

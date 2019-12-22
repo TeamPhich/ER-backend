@@ -8,7 +8,6 @@ const multerMiddleware = require("../middlewares/multer.middleware");
 
 router.get("/exam/:exam_id",
     tokenMiddleware.verify,
-    privilegesMiddleware.verify(1),
     paramsMiddleware.checkExamId,
     examSubjectsController.getInformation);
 
