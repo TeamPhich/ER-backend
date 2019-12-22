@@ -63,7 +63,7 @@ async function getInformation(req, res) {
 async function updateInformation(req, res) {
     try {
         const {id, new_id, new_name, finish_time, start_time} = req.body;
-        const updateCondition = {};
+        const updateCondition = {start_time, finish_time};
         if (!id) throw new Error("id field is missing");
         if (new_id) {
             const existId = await db.exams.findAll({
