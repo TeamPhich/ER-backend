@@ -158,7 +158,7 @@ async function getExamSubjects(req, res) {
 
         const now = Date.now() / 1000;
         if (exam[0].dataValues.start_time - now > 15 * 60) {
-            throw new Error("Ngoài giờ đăng kí");
+            // throw new Error("Ngoài giờ đăng kí");
         }
 
         let examSubjects = await db.exam_subjects.findAndCountAll({
@@ -177,7 +177,7 @@ async function getExamSubjects(req, res) {
         let countConditionSubject = 0;
         let countNotConditionSubject = 0;
         for(let i = 0; i < examSubjects.rows.length; i++) {
-            if(examSubjects.rows[i].dataValues.students.enoughCondition)
+            if(examSubjects.rows[i].dataValues.students[0].dataValues.enoughCondition)
                 countConditionSubject++;
             else countNotConditionSubject++;
         }
