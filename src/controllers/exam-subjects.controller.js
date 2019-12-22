@@ -35,7 +35,6 @@ async function create(req, res) {
 async function getInformation(req, res) {
     try {
         let {page, pageSize, keywords} = req.query;
-        console.log(page);
         const {exam_id} = req.params;
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
@@ -53,7 +52,7 @@ async function getInformation(req, res) {
                 attributes: ["name", "credit"]
             }
         };
-        if(page === isGetAll) {
+        if (page === isGetAll) {
             conditionQuery = {
                 where: {
                     exam_id
@@ -294,11 +293,11 @@ async function getSubjects(req, res) {
             },
             attribute: ["subject_id"]
         });
-        for(let i =0; i < subjectsInformation.rows.length; i++){
+        for (let i = 0; i < subjectsInformation.rows.length; i++) {
             let ExamSubjectFlag = false;
 
-            for(let j = 0; j < exam_subject.length; j++){
-                if(subjectsInformation.rows[i].dataValues.subject_id === exam_subject[j].dataValues.subject_id){
+            for (let j = 0; j < exam_subject.length; j++) {
+                if (subjectsInformation.rows[i].dataValues.subject_id === exam_subject[j].dataValues.subject_id) {
                     ExamSubjectFlag = true
                 }
             }

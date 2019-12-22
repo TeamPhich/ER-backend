@@ -130,6 +130,40 @@ async function checkStartFinishTimeShift(req, res, next) {
     }
 }
 
+async function checkStartFinishTimeExam(req, res, next) {
+    try {
+        const {start_time, finish_time} = req.body;
+        if (!start_time
+            || !finish_time) throw new Error("start_time or finish_time params is missing");
+        if (isNaN(start_time)
+            || isNaN(finish_time)) throw new Error("start_time or finish_time params can't NaN");
+        if (finish_time <= start_time)
+            throw new Error("start_time is later than finish_time");
+        let condition = {
+            where: {
+                start_time: {
+                    [Op.or]: [
+                        {[Op.between]: [start_time, finish_time]},
+                        {[Op.lte]: [start_time]}
+                    ]
+                },
+                finish_time: {
+                    [Op.or]: [
+                        {[Op.between]: [start_time, finish_time]},
+                        {[Op.gte]: [finish_time]}
+                    ]
+                }
+            }
+        };
+        const existedExam = await db.exams.findAll(condition);
+        if (existedExam.length)
+            throw new Error("Đã có kỳ thi trong khung thời gian này");
+        next();
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
 async function checkShiftId(req, res, next) {
     try {
         const {shift_id} = req.params;
@@ -171,5 +205,6 @@ module.exports = {
     checkRoomIdExisted,
     checkStartFinishTimeShift,
     checkShiftId,
-    checkShiftRoomId
+    checkShiftRoomId,
+    checkStartFinishTimeExam
 };
