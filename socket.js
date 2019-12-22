@@ -35,6 +35,7 @@ io.use((socket, next) => {
 }).on("connection", async (socket) => {
     let startRegistFlag = false;
     let finishRegistFlag = false;
+    console.log("socket ok");
 
     let checkStartTime = setInterval(() => {
         const now = Date.now();
