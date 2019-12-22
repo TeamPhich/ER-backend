@@ -23,7 +23,7 @@ async function getInformation(req, res) {
                 include: [{
                     model: db.subjects,
                 }]
-            },{
+            }, {
                 model: db.rooms,
             }]
         };
@@ -59,7 +59,7 @@ async function getInformation(req, res) {
 async function create(req, res) {
     try {
         const {examOfExamSubject, examOfShiftId} = req;
-        if(examOfExamSubject !== examOfShiftId) throw new Error("examSubject and shift is different exam");
+        if (examOfExamSubject !== examOfShiftId) throw new Error("examSubject and shift is different exam");
         const {shift_id} = req.params;
         const {exam_subject_id, room_id} = req.body;
         const existedShiftRoom = await db.shift_room.findAll({
@@ -94,10 +94,27 @@ async function create(req, res) {
     }
 }
 
-async function update(req, res) {
+async function updateRooms(req, res) {
     try {
-        const {shift_room_id} = req.params;
-
+        const {shift_room_id, shift_id} = req.params;
+        const {room_id} = req.body;
+        const roomExistedInShift = await db.shift_room.findAll({
+            where: {
+                id: {
+                    [Op.not]: [shift_room_id]
+                },
+                room_id,
+                shift_id
+            }
+        });
+        if (roomExistedInShift.length) throw new Error("room is existed in shift");
+        await db.shift_room.update({
+            room_id
+        }, {
+            where: {
+                id: shift_room_id
+            }
+        });
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
@@ -106,6 +123,8 @@ async function update(req, res) {
 
 async function destroy(req, res) {
     try {
+        const {shift_room_id} = req.params;
+        await deleteDBUtil.deleteShiftRoom([shift_room_id]);
         res.json(responseUtil.success({data: {}}));
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}));
@@ -115,6 +134,6 @@ async function destroy(req, res) {
 module.exports = {
     create,
     getInformation,
-    update,
+    updateRooms,
     destroy
 };

@@ -20,16 +20,18 @@ router.post("/shift/:shift_id",
     paramsMiddleware.checkExamSubjectId,
     shiftsRoomsController.create);
 
-router.put("/:shift_room_id",
+router.put("/:shift_room_id/shift/:shift_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    paramsMiddleware.checkShiftRoom,
-    shiftsRoomsController.update);
+    paramsMiddleware.checkShiftRoomId,
+    paramsMiddleware.checkRoomIdExisted,
+    paramsMiddleware.checkShiftId,
+    shiftsRoomsController.updateRooms);
 
-router.delete("/:shift_room",
+router.delete("/:shift_room_id",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
-    shiftsRoomsController.update
-);
+    paramsMiddleware.checkShiftRoomId,
+    shiftsRoomsController.destroy);
 
 module.exports = router;

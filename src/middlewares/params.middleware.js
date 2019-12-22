@@ -147,7 +147,7 @@ async function checkShiftId(req, res, next) {
     }
 }
 
-async function checkShiftRoom(req, res, next) {
+async function checkShiftRoomId(req, res, next) {
     try {
         const {shift_room_id} = req.params;
         if (!shift_room_id) throw new Error("shift_room params fields is missing");
@@ -171,5 +171,5 @@ module.exports = {
     checkRoomIdExisted,
     checkStartFinishTimeShift,
     checkShiftId,
-    checkShiftRoom
+    checkShiftRoomId
 };
