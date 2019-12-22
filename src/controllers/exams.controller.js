@@ -18,6 +18,7 @@ async function create(req, res) {
         if (existExam.length) throw new Error("Mã kì thi đã tồn tại!");
         await db.exams.create({
             id,
+            name,
             start_time,
             finish_time
         });
