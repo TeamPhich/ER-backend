@@ -148,11 +148,20 @@ async function deleteStudent(req, res) {
 async function getExamSubjects(req, res) {
     try {
         const {id} = req.tokenData;
+        const {exam_id} = req.params;
+
+        const exam = db.exams.findOne({
+            where: {
+                id: exam_id
+            }
+        });
+        console.log(exam.dataValues.start_time);
         const examSubjects = await db.exam_subjects.findAll({
             where: {
                 account_id: id
             }
         });
+
         res.json(responseUtil.success({data: {examSubjects}}))
     } catch (err) {
         res.json(responseUtil.fail({reason: err.message}))

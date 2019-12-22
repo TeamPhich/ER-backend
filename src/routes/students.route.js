@@ -3,6 +3,7 @@ const router = express.Router();
 const tokenMiddleware = require("../middlewares/tokens.middleware");
 const studentsController = require("../controllers/students.controller");
 const privilegesMiddleware = require("../middlewares/privileges.middleware");
+const paramsMiddleware = require("../middlewares/params.middleware");
 const multerMiddleware = require("../middlewares/multer.middleware");
 
 router.post("/", tokenMiddleware.verify,
@@ -22,8 +23,9 @@ router.delete("/:student_id", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     studentsController.deleteStudent);
 
-router.get("/exam_subject",
+router.get("/exam/:exam_id/exam_subject",
     tokenMiddleware.verify,
+    paramsMiddleware.checkExamId,
     studentsController.getExamSubjects);
 
 module.exports = router;

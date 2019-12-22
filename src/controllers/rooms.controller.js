@@ -21,7 +21,7 @@ async function getInformation(req, res) {
         let {page, pageSize, keywords} = req.query;
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
-        const isGetAll = -1;
+        const isGetAll = "-1";
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
         let conditionQuery = {
