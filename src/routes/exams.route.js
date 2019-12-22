@@ -17,6 +17,7 @@ router.get("/",
 router.put("/",
     tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
+    paramsMiddleWare.checkStartFinishTimeExam,
     examsController.updateInformation);
 router.delete("/:exam_id",
     tokenMiddleware.verify,

@@ -132,7 +132,7 @@ async function checkStartFinishTimeShift(req, res, next) {
 
 async function checkStartFinishTimeExam(req, res, next) {
     try {
-        const {start_time, finish_time} = req.body;
+        const {start_time, finish_time, id} = req.body;
         if (!start_time
             || !finish_time) throw new Error("start_time or finish_time params is missing");
         if (isNaN(start_time)
@@ -155,7 +155,13 @@ async function checkStartFinishTimeExam(req, res, next) {
                 }
             }
         };
+        if (id) {
+            condition.where.id = {
+                [Op.not]: [id]
+            }
+        }
         const existedExam = await db.exams.findAll(condition);
+        console.log(existedExam);
         if (existedExam.length)
             throw new Error("Đã có kỳ thi trong khung thời gian này");
         next();
