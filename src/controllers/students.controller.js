@@ -145,9 +145,24 @@ async function deleteStudent(req, res) {
     }
 }
 
+async function getExamSubjects(req, res) {
+    try {
+        const {id} = req.tokenData;
+        const examSubjects = await db.exam_subjects.findAll({
+            where: {
+                account_id: id
+            }
+        });
+        res.json(responseUtil.success({data: {examSubjects}}))
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}))
+    }
+}
+
 module.exports = {
     importStudents,
     getInfomation,
     putInformation,
-    deleteStudent
+    deleteStudent,
+    getExamSubjects
 };

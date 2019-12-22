@@ -35,9 +35,11 @@ async function create(req, res) {
 async function getInformation(req, res) {
     try {
         let {page, pageSize, keywords} = req.query;
+        console.log(page);
         const {exam_id} = req.params;
         if (!page) page = 1;
         if (!pageSize) pageSize = 15;
+        const isGetAll = "-1";
         const offset = (page - 1) * pageSize;
         const limit = Number(pageSize);
         let conditionQuery = {
@@ -51,6 +53,17 @@ async function getInformation(req, res) {
                 attributes: ["name", "credit"]
             }
         };
+        if(page === isGetAll) {
+            conditionQuery = {
+                where: {
+                    exam_id
+                },
+                include: {
+                    model: db.subjects,
+                    attributes: ["name", "credit"]
+                }
+            }
+        }
         if (keywords) {
             keywords = "+" + keywords + "*";
             conditionQuery.include.where = db.Sequelize.literal('MATCH (name) AGAINST (:name IN BOOLEAN MODE)');

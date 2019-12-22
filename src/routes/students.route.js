@@ -22,4 +22,8 @@ router.delete("/:student_id", tokenMiddleware.verify,
     privilegesMiddleware.verify(1),
     studentsController.deleteStudent);
 
+router.get("/exam_subject",
+    tokenMiddleware.verify,
+    studentsController.getExamSubjects);
+
 module.exports = router;
