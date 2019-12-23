@@ -24,7 +24,7 @@ io.use((socket, next) => {
                     id: exam_id
                 }
             });
-            if(!exams.length) return next(new Error("exam isn't existed"));
+            if (!exams.length) return next(new Error("exam isn't existed"));
             socket.start_time = exams[0].dataValues.start_time;
             socket.finish_time = exams[0].dataValues.finish_time;
             next();
@@ -35,14 +35,19 @@ io.use((socket, next) => {
 }).on("connection", async (socket) => {
     let startRegistFlag = false;
     let finishRegistFlag = false;
+    let examSubjectRegistFlag = false;
 
     let checkStartTime = setInterval(() => {
         const now = Date.now() / 1000;
-        if(socket.start_time <= now && !startRegistFlag){
+        if (socket.start_time - now >= 15 * 60 && !startRegistFlag && !examSubjectRegistFlag) {
+            socket.emit("exam_subject.time.read");
+            examSubjectRegistFlag = true
+        }
+        if (socket.start_time <= now && !startRegistFlag) {
             socket.emit("registing.time.start");
             startRegistFlag = true;
         }
-        if(socket.finish_time <= now && !finishRegistFlag){
+        if (socket.finish_time <= now && !finishRegistFlag) {
             socket.emit("registing.time.finish");
             startRegistFlag = false;
             finishRegistFlag = true;
@@ -50,6 +55,9 @@ io.use((socket, next) => {
         }
     }, 1000);
 
+    socket.on("shift_room.resgiting", (data) => {
+
+    });
 });
 
 server.listen(port, () => {
