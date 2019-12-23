@@ -179,6 +179,7 @@ io.use((socket, next) => {
 
             await registShiftRoom(shift_room_id, account_id, student_id);
             socket.emit("shift_room.resgisting.success", responseUtil.success({data: {}}));
+            socket.emit("exam_subject.update", {exam_subject_id, shift_room_id});
             socket.to(exam_subject_id).emit("exam_subject.update", {exam_subject_id, shift_room_id});
         } catch (err) {
             socket.emit("shift_room.resgisting.err", responseUtil.fail({reason: err.message}))
@@ -195,6 +196,7 @@ io.use((socket, next) => {
                 throw new Error("exam_subject_id isn't existed");
             await removingShiftRoom(shift_room_id, account_id, student_id);
             socket.emit("shift_room.removing.success", responseUtil.success({data: {}}));
+            socket.emit("exam_subject.update", {exam_subject_id, shift_room_id});
             socket.to(exam_subject_id).emit("exam_subject.update", {exam_subject_id, shift_room_id});
         } catch (err) {
             socket.emit("shift_room.removing.err", responseUtil.fail({reason: err.message}))
