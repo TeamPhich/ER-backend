@@ -167,7 +167,7 @@ io.use((socket, next) => {
             finishRegistFlag = true;
             clearInterval(checkStartTime);
         }
-    }, 200);
+    }, 50);
 
     socket.on("shift_room.resgisting", async (data) => {
         try {
