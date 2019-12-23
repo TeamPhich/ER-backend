@@ -155,11 +155,11 @@ io.use((socket, next) => {
         const now = Date.now() / 1000;
         if (socket.finish_time <= now && !finishRegistFlag) {
             socket.emit("registing.time.finish");
-            startRegistFlag = false;
+            startRegistFlag = true;
             finishRegistFlag = true;
             clearInterval(checkStartTime);
         }
-        if (socket.start_time <= now && !startRegistFlag && !finishRegistFlag) {
+        if (socket.start_time <= now && !startRegistFlag) {
             socket.emit("registing.time.start");
             startRegistFlag = true;
         }
