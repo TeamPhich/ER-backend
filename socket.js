@@ -124,7 +124,7 @@ io.use((socket, next) => {
             finishRegistFlag = true;
             clearInterval(checkStartTime);
         }
-    }, 1000);
+    }, 200);
 
     socket.on("shift_room.resgisting", async (data) => {
         try {
@@ -143,6 +143,8 @@ io.use((socket, next) => {
     });
     socket.on("current-slot.shift-room.get", async (data) => {
         try {
+            if (socket.start_time && !socket.finish_time)
+                throw new Error("Ngoài thời hạn đăng kí");
             const {shift_room_id} = data;
             if (!shift_room_id) throw new Error("missing shift_room_id");
             const shift_room = await db.shift_room.findAll({
