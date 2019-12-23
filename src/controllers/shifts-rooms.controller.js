@@ -70,10 +70,6 @@ async function create(req, res) {
                         room_id
                     },
                     {
-                        exam_subject_id,
-                        shift_id
-                    },
-                    {
                         room_id,
                         shift_id
                     }
