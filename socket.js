@@ -60,6 +60,49 @@ async function registShiftRoom(shift_room_id, account_id, student_id) {
     }
 }
 
+async function removingShiftRoom(shift_room_id, account_id, student_id) {
+    try {
+        const existedStudent = await db.students.findAll({
+            where: {
+                id: student_id,
+                account_id,
+                enoughCondition: 1,
+                shift_room: {
+                    [Op.eq]: shift_room_id
+                }
+            },
+        });
+        if (!existedStudent.length) throw new Error("student isn't existed or registed");
+        const exam_subject_id = existedStudent[0].dataValues.exam_subject_id;
+        const existedShiftRoom = await db.shift_room.findAll({
+            where: {
+                id: shift_room_id,
+                exam_subject_id
+            }
+        });
+        if (!existedShiftRoom.length) throw new Error("shift room isn't existed");
+        let {current_slot} = existedShiftRoom[0].dataValues;
+        if(current_slot === 0) throw new Error("slot is zero");
+        current_slot--;
+        await db.shift_room.update({
+            current_slot: current_slot
+        }, {
+            where: {
+                id: shift_room_id
+            }
+        });
+        await db.students.update({
+            shift_room: null
+        }, {
+            where: {
+                id: student_id
+            }
+        });
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
 io.use((socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
         const {token, exam_id} = socket.handshake.query;
@@ -132,7 +175,7 @@ io.use((socket, next) => {
                 throw new Error("Ngoài thời hạn đăng kí");
             let {shift_room_id, student_id, exam_subject_id} = data;
             exam_subject_id = exam_subject_id.toString();
-            if (socket.exam_subjects.includes(exam_subject_id)) throw new Error("exam_Subject_id isn't existed");
+            if (socket.exam_subjects.includes(exam_subject_id)) throw new Error("exam_subject_id isn't existed");
 
             await registShiftRoom(shift_room_id, account_id, student_id);
             socket.emit("shift_room.resgisting.success", responseUtil.success({data: {}}));
@@ -141,6 +184,23 @@ io.use((socket, next) => {
             socket.emit("shift_room.resgisting.err", responseUtil.fail({reason: err.message}))
         }
     });
+
+    socket.on("shift_room.removing", async (data) => {
+        try {
+            if (socket.start_time && !socket.finish_time)
+                throw new Error("Ngoài thời hạn đăng kí");
+            let {shift_room_id, student_id, exam_subject_id} = data;
+            exam_subject_id = exam_subject_id.toString();
+            if(socket.exam_subjects.includes(exam_subject_id))
+                throw new Error("exam_subject_id isn't existed");
+            await removingShiftRoom(shift_room_id, account_id, student_id);
+            socket.emit("shift_room.removing.success", responseUtil.success({data: {}}));
+            socket.to(exam_subject_id).emit("exam_subject.update", {exam_subject_id, shift_room_id});
+        } catch (err) {
+            socket.emit("shift_room.removing.err", responseUtil.fail({reason: err.message}))
+        }
+    });
+
     socket.on("current-slot.shift-room.get", async (data) => {
         try {
             if (socket.start_time && !socket.finish_time)
@@ -150,9 +210,9 @@ io.use((socket, next) => {
             const shift_room = await db.shift_room.findAll({
                 where: {id: shift_room_id}
             });
-            if(!shift_room.length) throw new Error("shift_room isn't exsited");
+            if (!shift_room.length) throw new Error("shift_room isn't exsited");
             const {current_slot} = shift_room[0].dataValues;
-            socket.emit("current-slot.shift-room.post",{current_slot, shift_room_id});
+            socket.emit("current-slot.shift-room.post", {current_slot, shift_room_id});
         } catch (err) {
             socket.emit("current-slot.shift-room.err", responseUtil.fail({reason: err.message}));
         }
