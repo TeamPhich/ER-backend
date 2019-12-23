@@ -135,6 +135,11 @@ async function deleteStudent(req, res) {
             }
         });
         if (!isStudent.length) throw new Error("student is invalid");
+        await db.students.destroy({
+            where: {
+                account_id: student_id
+            }
+        });
         await db.accounts.destroy({
             where: {
                 id: student_id
