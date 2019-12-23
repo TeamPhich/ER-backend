@@ -8,7 +8,6 @@ const port = config.get("PORT");
 const secretkey = config.get("SECRET_KEY");
 
 let io = require("socket.io")(server);
-io.origins('*:*');
 
 io.use((socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
@@ -36,15 +35,14 @@ io.use((socket, next) => {
 }).on("connection", async (socket) => {
     let startRegistFlag = false;
     let finishRegistFlag = false;
-    console.log("socket ok");
 
     let checkStartTime = setInterval(() => {
-        const now = Date.now();
-        if(socket.start_time >= now){
+        const now = Date.now() / 1000;
+        if(socket.start_time <= now && !startRegistFlag){
             socket.emit("registing.time.start");
             startRegistFlag = true;
         }
-        if(now >= socket.finish_time){
+        if(socket.finish_time <= now && !finishRegistFlag){
             socket.emit("registing.time.finish");
             startRegistFlag = false;
             finishRegistFlag = true;
