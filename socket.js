@@ -36,20 +36,22 @@ io.use((socket, next) => {
     let startRegistFlag = false;
     let finishRegistFlag = false;
     let examSubjectRegistFlag = false;
+    const groupId = socket.tokenData.id;
+
+    socket.join(groupId);
 
     let checkStartTime = setInterval(() => {
         const now = Date.now() / 1000;
-        console.log(socket.start_time - now );
-        if (socket.start_time - now <= 15 * 60 && !startRegistFlag && !examSubjectRegistFlag) {
+        if (socket.start_time <= now && !startRegistFlag) {
+            socket.to(groupId).emit("registing.time.start");
+            startRegistFlag = true;
+        }
+        if ((socket.start_time - now <= 15 * 60 && !examSubjectRegistFlag) && !startRegistFlag) {
             socket.emit("exam_subject.time.read");
             examSubjectRegistFlag = true
         }
-        if (socket.start_time <= now && !startRegistFlag) {
-            socket.emit("registing.time.start");
-            startRegistFlag = true;
-        }
         if (socket.finish_time <= now && !finishRegistFlag) {
-            socket.emit("registing.time.finish");
+            socket.to(groupId).emit("registing.time.finish");
             startRegistFlag = false;
             finishRegistFlag = true;
             clearInterval(checkStartTime);
