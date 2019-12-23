@@ -3,11 +3,62 @@ const server = require("http").createServer(app);
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const db = require("./src/models/index");
+const responseUtil = require("./src/utils/responses.util");
+const Op = db.Sequelize.Op;
 
 const port = config.get("PORT");
 const secretkey = config.get("SECRET_KEY");
 
 let io = require("socket.io")(server);
+
+async function registShiftRoom(shift_room_id, account_id, student_id) {
+    try {
+        const existedStudent = await db.students.findAll({
+            where: {
+                id: student_id,
+                account_id,
+                enoughCondition: 1,
+                shift_room: {
+                    [Op.eq]: null
+                }
+            },
+        });
+        if (!existedStudent.length) throw new Error("student isn't existed or registed");
+        const exam_subject_id = existedStudent[0].dataValues.exam_subject_id;
+        const existedShiftRoom = await db.shift_room.findAll({
+            where: {
+                id: shift_room_id,
+                exam_subject_id
+            }
+        });
+        if (!existedShiftRoom.length) throw new Error("shift room isn't existed");
+        let {room_id, current_slot} = existedShiftRoom[0].dataValues;
+        const room = await db.rooms.findAll({
+            where: {
+                id: room_id
+            }
+        });
+        const roomMaxSlot = room[0].dataValues.slot;
+        if (current_slot >= roomMaxSlot) throw new Error("slot which in room is full");
+        current_slot++;
+        await db.shift_room.update({
+            current_slot: current_slot
+        }, {
+            where: {
+                id: shift_room_id
+            }
+        });
+        await db.students.update({
+            shift_room: shift_room_id
+        }, {
+            where: {
+                id: student_id
+            }
+        });
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
 
 io.use((socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
@@ -25,6 +76,22 @@ io.use((socket, next) => {
                 }
             });
             if (!exams.length) return next(new Error("exam isn't existed"));
+            let exam_subjects = await db.exam_subjects.findAll({
+                where: {
+                    exam_id
+                },
+                include: {
+                    model: db.students,
+                    group: ["exam_subject_id"],
+                    where: {
+                        account_id: decoded.id
+                    }
+                }
+            });
+            for (let i = 0; i < exam_subjects.length; i++) {
+                exam_subjects[i] = exam_subjects[i].dataValues.id;
+            }
+            socket.exam_subjects = exam_subjects;
             socket.start_time = exams[0].dataValues.start_time;
             socket.finish_time = exams[0].dataValues.finish_time;
             next();
@@ -36,9 +103,10 @@ io.use((socket, next) => {
     let startRegistFlag = false;
     let finishRegistFlag = false;
     let examSubjectRegistFlag = false;
-    const groupId = socket.tokenData.id;
-
-    socket.join(groupId);
+    const account_id = socket.tokenData.id;
+    for (let i = 0; i < socket.exam_subjects.length; i++) {
+        socket.join(socket.exam_subjects[i]);
+    }
 
     let checkStartTime = setInterval(() => {
         const now = Date.now() / 1000;
@@ -51,16 +119,42 @@ io.use((socket, next) => {
             examSubjectRegistFlag = true
         }
         if (socket.finish_time <= now && !finishRegistFlag) {
-            socket.to(groupId).emit("registing.time.finish");
+            socket.emit("registing.time.finish");
             startRegistFlag = false;
             finishRegistFlag = true;
             clearInterval(checkStartTime);
         }
     }, 1000);
 
-    socket.on("shift_room.resgiting", (data) => {
+    socket.on("shift_room.resgisting", async (data) => {
+        try {
+            if (socket.start_time && !socket.finish_time)
+                throw new Error("Ngoài thời hạn đăng kí");
+            let {shift_room_id, student_id, exam_subject_id} = data;
+            exam_subject_id = exam_subject_id.toString();
+            if (socket.exam_subjects.includes(exam_subject_id)) throw new Error("exam_Subject_id isn't existed");
 
+            await registShiftRoom(shift_room_id, account_id, student_id);
+            socket.emit("shift_room.resgisting.success", responseUtil.success({data: {}}));
+            socket.to(exam_subject_id).emit("exam_subject.update", {exam_subject_id, shift_room_id});
+        } catch (err) {
+            socket.emit("shift_room.resgisting.err", responseUtil.fail({reason: err.message}))
+        }
     });
+    socket.on("current-slot.shift-room.get", async (data) => {
+        try {
+            const {shift_room_id} = data;
+            if (!shift_room_id) throw new Error("missing shift_room_id");
+            const shift_room = await db.shift_room.findAll({
+                where: {id: shift_room_id}
+            });
+            if(!shift_room.length) throw new Error("shift_room isn't exsited");
+            const {current_slot} = shift_room[0].dataValues;
+            socket.emit("current-slot.shift-room.post",{current_slot, shift_room_id});
+        } catch (err) {
+            socket.emit("current-slot.shift-room.err", responseUtil.fail({reason: err.message}));
+        }
+    })
 });
 
 server.listen(port, () => {
