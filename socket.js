@@ -153,6 +153,12 @@ io.use((socket, next) => {
 
     let checkStartTime = setInterval(() => {
         const now = Date.now() / 1000;
+        if (socket.finish_time <= now && !finishRegistFlag) {
+            socket.emit("registing.time.finish");
+            startRegistFlag = false;
+            finishRegistFlag = true;
+            clearInterval(checkStartTime);
+        }
         if (socket.start_time <= now && !startRegistFlag) {
             socket.emit("registing.time.start");
             startRegistFlag = true;
@@ -161,12 +167,7 @@ io.use((socket, next) => {
             socket.emit("exam_subject.time.read");
             examSubjectRegistFlag = true
         }
-        if (socket.finish_time <= now && !finishRegistFlag) {
-            socket.emit("registing.time.finish");
-            startRegistFlag = false;
-            finishRegistFlag = true;
-            clearInterval(checkStartTime);
-        }
+
     }, 50);
 
     socket.on("shift_room.resgisting", async (data) => {
