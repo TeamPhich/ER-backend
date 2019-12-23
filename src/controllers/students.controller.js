@@ -41,6 +41,7 @@ async function importStudents(req, res) {
                 user_name: MSSV,
                 password: hashPassword,
                 fullname,
+                email: MSSV + "@vnu.edu.vn",
                 birthday: birthday,
                 role_id: 2
             });
