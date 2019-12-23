@@ -161,7 +161,7 @@ async function getExamSubjects(req, res) {
             throw new Error("Ngoài giờ đăng kí");
         }
 
-        let examSubjects = await db.exam_subjects.findAndCountAll({
+        let examSubjectsData = await db.exam_subjects.findAll({
             where: {
                 exam_id
             },
@@ -188,6 +188,9 @@ async function getExamSubjects(req, res) {
         });
         let countConditionSubject = 0;
         let countNotConditionSubject = 0;
+        let examSubjects = {};
+        examSubjects.rows = examSubjectsData;
+        examSubjects.count = examSubjects.rows.length;
         for(let i = 0; i < examSubjects.rows.length; i++) {
             if(examSubjects.rows[i].dataValues.students[0].dataValues.enoughCondition)
                 countConditionSubject++;
