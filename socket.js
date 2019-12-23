@@ -159,7 +159,7 @@ io.use((socket, next) => {
             finishRegistFlag = true;
             clearInterval(checkStartTime);
         }
-        if (socket.start_time <= now && !startRegistFlag) {
+        if (socket.start_time <= now && !startRegistFlag && !finishRegistFlag) {
             socket.emit("registing.time.start");
             startRegistFlag = true;
         }
