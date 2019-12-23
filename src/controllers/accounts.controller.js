@@ -138,6 +138,7 @@ async function changePassword(req, res) {
         const {id} = req.tokenData;
         if (!oldPassword) throw new Error("oldPassword field is missing");
         if (!newPassword) throw new Error("newPassword field is missing");
+        if (newPassword.length < 8) throw new Error("password must greater than 8 characters");
 
         let [userData] = await db.accounts.findAll({
             where: {
