@@ -43,7 +43,7 @@ io.use((socket, next) => {
     let checkStartTime = setInterval(() => {
         const now = Date.now() / 1000;
         if (socket.start_time <= now && !startRegistFlag) {
-            socket.to(groupId).emit("registing.time.start");
+            socket.emit("registing.time.start");
             startRegistFlag = true;
         }
         if ((socket.start_time - now <= 15 * 60 && !examSubjectRegistFlag) && !startRegistFlag) {
