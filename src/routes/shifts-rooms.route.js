@@ -34,4 +34,10 @@ router.delete("/:shift_room_id",
     paramsMiddleware.checkShiftRoomId,
     shiftsRoomsController.destroy);
 
+router.get("/:shift_room_id/students/",
+    tokenMiddleware.verify,
+    privilegesMiddleware.verify(1),
+    paramsMiddleware.checkShiftRoomId,
+    shiftsRoomsController.getStudentOfShiftRoom);
+
 module.exports = router;

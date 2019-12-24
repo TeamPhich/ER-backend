@@ -127,9 +127,34 @@ async function destroy(req, res) {
     }
 }
 
+async function getStudentOfShiftRoom(req, res) {
+    try {
+        const {shift_room_id} = req.params;
+        const students = await db.students.findAll({
+            where: {
+                shift_room: shift_room_id
+            },
+            include: [{
+                model: db.accounts,
+                attributes: ["user_name", "fullname"]
+            }, {
+                model: db.exam_subjects,
+                include: {
+                    model: db.subjects
+                }
+            }]
+        });
+        res.json(responseUtil.success({data: {students}}));
+    } catch (err) {
+        res.json(responseUtil.fail({reason: err.message}));
+    }
+}
+
+
 module.exports = {
     create,
     getInformation,
     updateRooms,
-    destroy
+    destroy,
+    getStudentOfShiftRoom
 };
